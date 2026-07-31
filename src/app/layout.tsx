@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider, themeInitScript } from "@/components/theme/theme-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { BackdropFx } from "@/components/layout/backdrop-fx";
 import { siteConfig } from "@/lib/site-config";
 
 const geistSans = Geist({
@@ -37,6 +38,7 @@ export default function RootLayout({
       </head>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
+          <BackdropFx />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />

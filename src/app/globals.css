@@ -10,6 +10,10 @@
   --border: #22252b;
   --accent: #2dd4bf;
   --accent-foreground: #06110f;
+
+  --accent-rgb: 45, 212, 191;
+  --grid-line: rgba(232, 234, 237, 0.06);
+  --glow-opacity: 0.22;
 }
 
 :root[data-theme="light"] {
@@ -22,6 +26,10 @@
   --border: #e3e5e8;
   --accent: #0f9488;
   --accent-foreground: #f0fdfa;
+
+  --accent-rgb: 15, 148, 136;
+  --grid-line: rgba(17, 19, 24, 0.05);
+  --glow-opacity: 0.12;
 }
 
 @theme inline {
@@ -44,4 +52,99 @@ body {
 ::selection {
   background: var(--accent);
   color: var(--accent-foreground);
+}
+
+/* Theme-aware backdrop: a faint grid plus two slow-drifting gradient blobs.
+   Fixed behind all content; fades out toward the bottom via mask so it
+   reads as an atmosphere near the top rather than a wallpaper. */
+.backdrop-fx {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black, transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 70%);
+}
+
+.backdrop-fx__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.backdrop-fx__glow {
+  position: absolute;
+  inset: -20%;
+  opacity: var(--glow-opacity);
+  background-image:
+    radial-gradient(40% 35% at 25% 20%, rgb(var(--accent-rgb)), transparent 70%),
+    radial-gradient(35% 30% at 75% 40%, rgb(var(--accent-rgb)), transparent 70%);
+  filter: blur(60px);
+  animation: backdrop-flow 22s ease-in-out infinite alternate;
+}
+
+@keyframes backdrop-flow {
+  0% {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+/* Dialog open/close transition, using @starting-style so it degrades
+   gracefully (an instant show/hide) in browsers that don't support it. */
+dialog {
+  opacity: 0;
+  transform: scale(0.98);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    overlay 0.15s ease allow-discrete,
+    display 0.15s ease allow-discrete;
+}
+
+dialog[open] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+dialog::backdrop {
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    overlay 0.15s ease allow-discrete,
+    display 0.15s ease allow-discrete;
+}
+
+dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

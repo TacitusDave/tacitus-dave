@@ -56,6 +56,8 @@ export const projects = [
     title: "Project One",
     summary:
       "A short, concrete description of the system: what it does, the scale it runs at, and the core engineering problem it solves.",
+    details:
+      "Replace this with the real architecture story: the constraint that shaped the design, the tradeoff that was made, and what it would look like done differently today.",
     stack: ["TypeScript", "Next.js", "PostgreSQL"],
   },
   {
@@ -63,6 +65,8 @@ export const projects = [
     title: "Project Two",
     summary:
       "A short, concrete description of the system: what it does, the scale it runs at, and the core engineering problem it solves.",
+    details:
+      "Replace this with the real architecture story: the constraint that shaped the design, the tradeoff that was made, and what it would look like done differently today.",
     stack: ["Go", "Kubernetes", "AWS"],
   },
   {
@@ -70,6 +74,8 @@ export const projects = [
     title: "Project Three",
     summary:
       "A short, concrete description of the system: what it does, the scale it runs at, and the core engineering problem it solves.",
+    details:
+      "Replace this with the real architecture story: the constraint that shaped the design, the tradeoff that was made, and what it would look like done differently today.",
     stack: ["Python", "Terraform", "GCP"],
   },
 ] as const;

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { siteConfig } from "@/lib/site-config";
+import { Button } from "@/components/ui/button";
 
 export function ContactForm() {
   const [name, setName] = useState("");
@@ -61,12 +62,9 @@ export function ContactForm() {
         />
       </div>
 
-      <button
-        type="submit"
-        className="self-start rounded-md bg-accent px-5 py-2.5 font-mono text-sm text-accent-foreground transition-opacity hover:opacity-90"
-      >
+      <Button type="submit" className="self-start">
         Send Message
-      </button>
+      </Button>
     </form>
   );
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/page-header";
 import { brandTraits, brandPromise } from "@/lib/content";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
   title: "About — Tacitus Dave OS",
@@ -37,14 +39,18 @@ export default function AboutPage() {
           <h2 className="font-mono text-xs uppercase tracking-widest text-accent">
             How this platform operates
           </h2>
-          <div className="mt-6 grid gap-px overflow-hidden rounded-md bg-border sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {brandTraits.map(({ trait, description }) => (
-              <div key={trait} className="bg-background p-5">
-                <p className="text-sm font-medium text-foreground">{trait}</p>
-                <p className="mt-2 text-xs text-foreground-muted">
+              <Card key={trait} className="p-5 hover:border-accent">
+                <div className="flex items-center gap-2">
+                  <Badge className="border-accent/40 text-accent">
+                    {trait}
+                  </Badge>
+                </div>
+                <p className="mt-3 text-xs text-foreground-muted">
                   {description}
                 </p>
-              </div>
+              </Card>
             ))}
           </div>
         </div>
