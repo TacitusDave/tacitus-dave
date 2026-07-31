@@ -5,7 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "About — Tacitus Dave OS",
+  title: "About",
+  description:
+    "How Tacitus Dave bridges software engineering and cybersecurity — the philosophy behind a platform built on transparency, security-first thinking, and continuous learning.",
 };
 
 export default function AboutPage() {

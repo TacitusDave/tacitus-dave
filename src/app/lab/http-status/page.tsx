@@ -3,7 +3,8 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { HttpStatusReference } from "@/components/lab/http-status-reference";
 
 export const metadata: Metadata = {
-  title: "HTTP Status Reference — Tacitus Dave OS",
+  title: "HTTP Status Reference",
+  description: "A searchable reference for every standard HTTP status code and what it means.",
 };
 
 export default function HttpStatusPage() {

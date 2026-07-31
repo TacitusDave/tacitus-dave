@@ -3,7 +3,8 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { ContrastChecker } from "@/components/lab/contrast-checker";
 
 export const metadata: Metadata = {
-  title: "Contrast Checker — Tacitus Dave OS",
+  title: "Contrast Checker",
+  description: "Check the WCAG contrast ratio between two colors and see whether they pass AA or AAA.",
 };
 
 export default function ContrastCheckerPage() {

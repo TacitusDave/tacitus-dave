@@ -3,7 +3,8 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { UuidGenerator } from "@/components/lab/uuid-generator";
 
 export const metadata: Metadata = {
-  title: "UUID Generator — Tacitus Dave OS",
+  title: "UUID Generator",
+  description: "Generate RFC 4122 version 4 UUIDs using a cryptographically secure random source.",
 };
 
 export default function UuidGeneratorPage() {

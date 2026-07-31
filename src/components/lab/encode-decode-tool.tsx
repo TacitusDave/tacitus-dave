@@ -85,12 +85,16 @@ export function EncodeDecodeTool({
       ) : (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <label className="font-mono text-xs uppercase tracking-widest text-foreground-muted">
+            <label
+              htmlFor="encode-decode-output"
+              className="font-mono text-xs uppercase tracking-widest text-foreground-muted"
+            >
               {outputLabel}
             </label>
             <CopyButton value={output} />
           </div>
           <textarea
+            id="encode-decode-output"
             readOnly
             rows={5}
             value={output}

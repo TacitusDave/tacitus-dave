@@ -4,7 +4,9 @@ import { ArchitectureExplorer } from "@/components/architecture/architecture-exp
 import { RelatedTools } from "@/components/lab/related-tools";
 
 export const metadata: Metadata = {
-  title: "Architecture — Tacitus Dave OS",
+  title: "Architecture",
+  description:
+    "A clickable reference architecture diagram — click any node to see the real design tradeoff behind it, not just its name.",
 };
 
 export default function ArchitecturePage() {

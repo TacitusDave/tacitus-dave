@@ -3,7 +3,8 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { EncodeDecodeTool } from "@/components/lab/encode-decode-tool";
 
 export const metadata: Metadata = {
-  title: "URL Encode / Decode — Tacitus Dave OS",
+  title: "URL Encode / Decode",
+  description: "Percent-encode or decode a URL component online, entirely in your browser.",
 };
 
 export default function UrlEncoderPage() {

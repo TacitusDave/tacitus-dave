@@ -4,7 +4,8 @@ import { SocDashboard } from "@/components/security/soc-dashboard";
 import { RelatedTools } from "@/components/lab/related-tools";
 
 export const metadata: Metadata = {
-  title: "Security — Tacitus Dave OS",
+  title: "Security",
+  description: "A simulated SOC dashboard and threat feed mapped to the MITRE ATT&CK framework.",
 };
 
 export default function SecurityPage() {

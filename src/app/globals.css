@@ -24,10 +24,10 @@
   --foreground: #111318;
   --foreground-muted: #5b6068;
   --border: #e3e5e8;
-  --accent: #0f9488;
+  --accent: #0c7568;
   --accent-foreground: #f0fdfa;
 
-  --accent-rgb: 15, 148, 136;
+  --accent-rgb: 12, 117, 104;
   --grid-line: rgba(17, 19, 24, 0.05);
   --glow-opacity: 0.12;
 }

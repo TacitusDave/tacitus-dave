@@ -4,7 +4,9 @@ import { Terminal } from "@/components/terminal/terminal";
 import { RelatedTools } from "@/components/lab/related-tools";
 
 export const metadata: Metadata = {
-  title: "Terminal — Tacitus Dave OS",
+  title: "Terminal",
+  description:
+    "A real command-line shell running in your browser, with a virtual filesystem and tab-completion.",
 };
 
 export default function TerminalPage() {

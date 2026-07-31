@@ -5,7 +5,9 @@ import { SiteBrowser } from "@/components/browser/site-browser";
 import { RelatedTools } from "@/components/lab/related-tools";
 
 export const metadata: Metadata = {
-  title: "Browser — Tacitus Dave OS",
+  title: "Browser",
+  description:
+    "Search and browse without leaving the site — a private-search panel and localhost previewer built into Tacitus Dave OS.",
 };
 
 export default function BrowserPage() {

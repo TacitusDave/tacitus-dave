@@ -3,7 +3,9 @@ import { PageHeader } from "@/components/layout/page-header";
 import { LabCatalog } from "@/components/lab/lab-catalog";
 
 export const metadata: Metadata = {
-  title: "Lab — Tacitus Dave OS",
+  title: "Lab",
+  description:
+    "A searchable catalog of every interactive tool on Tacitus Dave OS, grouped by security, systems, and developer utilities.",
 };
 
 export default function LabPage() {

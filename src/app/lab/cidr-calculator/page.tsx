@@ -3,7 +3,9 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { CidrCalculator } from "@/components/lab/cidr-calculator";
 
 export const metadata: Metadata = {
-  title: "CIDR Calculator — Tacitus Dave OS",
+  title: "CIDR Calculator",
+  description:
+    "Calculate a subnet's network address, broadcast address, and usable host range from a CIDR block.",
 };
 
 export default function CidrCalculatorPage() {

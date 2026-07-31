@@ -3,7 +3,8 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { CaseConverter } from "@/components/lab/case-converter";
 
 export const metadata: Metadata = {
-  title: "Case Converter — Tacitus Dave OS",
+  title: "Case Converter",
+  description: "Convert text to camelCase, snake_case, kebab-case, Title Case, and more, instantly.",
 };
 
 export default function CaseConverterPage() {

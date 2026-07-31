@@ -5,7 +5,8 @@ import { SocialLinks } from "@/components/contact/social-links";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
-  title: "Contact — Tacitus Dave OS",
+  title: "Contact",
+  description: "Get in touch with Tacitus Dave for roles, projects, or technical questions.",
 };
 
 const socialLinks = [

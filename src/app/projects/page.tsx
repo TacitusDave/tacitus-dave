@@ -4,7 +4,9 @@ import { projects } from "@/lib/content";
 import { ProjectCard } from "@/components/projects/project-card";
 
 export const metadata: Metadata = {
-  title: "Projects — Tacitus Dave OS",
+  title: "Projects",
+  description:
+    "Engineering case studies from Tacitus Dave — systems built end to end, with the reasoning behind each decision.",
 };
 
 export default function ProjectsPage() {

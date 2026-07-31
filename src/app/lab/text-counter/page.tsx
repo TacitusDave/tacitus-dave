@@ -3,7 +3,8 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { TextCounter } from "@/components/lab/text-counter";
 
 export const metadata: Metadata = {
-  title: "Text Counter — Tacitus Dave OS",
+  title: "Text Counter",
+  description: "Count words, characters, and sentences, and estimate reading time for any text.",
 };
 
 export default function TextCounterPage() {

@@ -3,7 +3,9 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { JwtDecoder } from "@/components/lab/jwt-decoder";
 
 export const metadata: Metadata = {
-  title: "JWT Decoder — Tacitus Dave OS",
+  title: "JWT Decoder",
+  description:
+    "Decode a JSON Web Token's header and payload, and check its expiry — entirely client-side.",
 };
 
 export default function JwtDecoderPage() {

@@ -3,7 +3,9 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { PasswordEntropy } from "@/components/lab/password-entropy";
 
 export const metadata: Metadata = {
-  title: "Password Entropy — Tacitus Dave OS",
+  title: "Password Entropy",
+  description:
+    "Calculate real password entropy from character variety and length — not a fake strength meter.",
 };
 
 export default function PasswordEntropyPage() {

@@ -87,6 +87,7 @@ function ColorField({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           spellCheck={false}
+          aria-label={`${label} hex value`}
           className={fieldStyles}
         />
       </div>

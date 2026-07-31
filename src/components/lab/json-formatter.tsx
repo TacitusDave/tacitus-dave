@@ -37,7 +37,7 @@ export function JsonFormatter() {
         />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="font-mono text-xs uppercase tracking-widest text-foreground-muted">Indent</span>
         {[2, 4].map((size) => (
           <Button
@@ -62,7 +62,7 @@ export function JsonFormatter() {
       ) : (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <label className="font-mono text-xs uppercase tracking-widest text-foreground-muted">Output</label>
+            <p className="font-mono text-xs uppercase tracking-widest text-foreground-muted">Output</p>
             <CopyButton value={output} />
           </div>
           <pre className="max-h-96 overflow-auto rounded-md border border-border bg-background-elevated p-4 font-mono text-xs text-foreground">

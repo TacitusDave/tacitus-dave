@@ -3,7 +3,9 @@ import { ToolPageShell } from "@/components/lab/tool-page-shell";
 import { EncodeDecodeTool } from "@/components/lab/encode-decode-tool";
 
 export const metadata: Metadata = {
-  title: "Base64 Encode / Decode — Tacitus Dave OS",
+  title: "Base64 Encode / Decode",
+  description:
+    "Encode or decode Base64 text online, UTF-8 safe in both directions — runs entirely in your browser.",
 };
 
 export default function Base64Page() {
