@@ -1,11 +1,35 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/page-header";
 import { ContactForm } from "@/components/contact/contact-form";
+import { SocialLinks } from "@/components/contact/social-links";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Contact — Tacitus Dave OS",
 };
+
+const socialLinks = [
+  {
+    label: "GitHub",
+    href: siteConfig.social.github,
+    description: "Real repositories, commit history, and open-source work.",
+  },
+  {
+    label: "Instagram",
+    href: siteConfig.social.instagram,
+    description: "Behind-the-scenes photos and build logs.",
+  },
+  {
+    label: "TikTok",
+    href: siteConfig.social.tiktok,
+    description: "Short-form videos on engineering and security.",
+  },
+  {
+    label: "LinkedIn",
+    href: siteConfig.social.linkedin,
+    description: "Professional experience and recommendations.",
+  },
+].filter((link) => link.href);
 
 export default function ContactPage() {
   return (
@@ -34,24 +58,7 @@ export default function ContactPage() {
             <h2 className="font-mono text-xs uppercase tracking-widest text-accent">
               Elsewhere
             </h2>
-            <div className="mt-2 flex flex-col gap-1">
-              <a
-                href={siteConfig.social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-foreground-muted transition-colors hover:text-accent"
-              >
-                GitHub
-              </a>
-              <a
-                href={siteConfig.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-foreground-muted transition-colors hover:text-accent"
-              >
-                LinkedIn
-              </a>
-            </div>
+            <SocialLinks links={socialLinks} />
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/page-header";
 import { Terminal } from "@/components/terminal/terminal";
+import { RelatedTools } from "@/components/lab/related-tools";
 
 export const metadata: Metadata = {
   title: "Terminal — Tacitus Dave OS",
@@ -18,6 +19,8 @@ export default function TerminalPage() {
       <section className="mx-auto max-w-4xl px-6 py-12">
         <Terminal />
       </section>
+
+      <RelatedTools currentSlug="terminal" />
     </>
   );
 }

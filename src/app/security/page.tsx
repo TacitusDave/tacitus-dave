@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/page-header";
 import { SocDashboard } from "@/components/security/soc-dashboard";
+import { RelatedTools } from "@/components/lab/related-tools";
 
 export const metadata: Metadata = {
   title: "Security — Tacitus Dave OS",
@@ -18,6 +19,8 @@ export default function SecurityPage() {
       <section className="mx-auto max-w-6xl px-6 py-12">
         <SocDashboard />
       </section>
+
+      <RelatedTools currentSlug="security" />
     </>
   );
 }

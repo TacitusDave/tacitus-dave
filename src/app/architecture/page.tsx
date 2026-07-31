@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/page-header";
 import { ArchitectureExplorer } from "@/components/architecture/architecture-explorer";
+import { RelatedTools } from "@/components/lab/related-tools";
 
 export const metadata: Metadata = {
   title: "Architecture — Tacitus Dave OS",
@@ -18,6 +19,8 @@ export default function ArchitecturePage() {
       <section className="mx-auto max-w-5xl px-6 py-12">
         <ArchitectureExplorer />
       </section>
+
+      <RelatedTools currentSlug="architecture" />
     </>
   );
 }

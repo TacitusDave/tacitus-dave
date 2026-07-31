@@ -7,15 +7,15 @@ export const siteConfig = {
   nav: [
     { label: "About", href: "/about" },
     { label: "Projects", href: "/projects" },
-    { label: "Security", href: "/security" },
-    { label: "Architecture", href: "/architecture" },
-    { label: "Terminal", href: "/terminal" },
+    { label: "Lab", href: "/lab" },
     { label: "Contact", href: "/contact" },
   ],
-  // TODO: replace with real contact details before launch.
-  contactEmail: "hello@tacitusdave.dev",
+  contactEmail: "tacitusdave@gmail.com",
   social: {
-    github: "https://github.com/",
-    linkedin: "https://www.linkedin.com/",
+    github: "https://github.com/TacitusDave",
+    instagram: "https://www.instagram.com/tacitus_dave",
+    tiktok: "https://www.tiktok.com/@tacitus_dave",
+    // TODO: add once provided.
+    linkedin: "",
   },
 } as const;

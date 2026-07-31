@@ -32,7 +32,15 @@ export const fsRoot: FsDir = {
     },
     "contact.txt": {
       type: "file",
-      content: `Email: ${siteConfig.contactEmail}\nGitHub: ${siteConfig.social.github}\nLinkedIn: ${siteConfig.social.linkedin}`,
+      content: [
+        `Email: ${siteConfig.contactEmail}`,
+        `GitHub: ${siteConfig.social.github}`,
+        `Instagram: ${siteConfig.social.instagram}`,
+        `TikTok: ${siteConfig.social.tiktok}`,
+        siteConfig.social.linkedin ? `LinkedIn: ${siteConfig.social.linkedin}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n"),
     },
     projects: {
       type: "dir",

@@ -40,6 +40,7 @@ const ROUTE_MAP: Record<string, string> = {
   security: "/security",
   architecture: "/architecture",
   terminal: "/terminal",
+  browser: "/browser",
   contact: "/contact",
 };
 
@@ -51,7 +52,7 @@ const HELP_TEXT = [
   "  cd <path>         change directory",
   "  pwd               print working directory",
   "  cat <file>        print a file's contents",
-  "  open <page>       navigate the real site (about, projects, security, architecture, contact, home)",
+  "  open <page>       navigate the real site (about, projects, security, architecture, browser, contact, home)",
   "  theme [dark|light] view or set the color theme",
   "  contact           show contact details",
   "  resume            shortcut for `cat resume.txt`",
