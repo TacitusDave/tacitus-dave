@@ -8,6 +8,8 @@ export const siteConfig = {
     { label: "About", href: "/about" },
     { label: "Projects", href: "/projects" },
     { label: "Security", href: "/security" },
+    { label: "Architecture", href: "/architecture" },
+    { label: "Terminal", href: "/terminal" },
     { label: "Contact", href: "/contact" },
   ],
   // TODO: replace with real contact details before launch.

@@ -9,7 +9,7 @@ export function Footer() {
           © {new Date().getFullYear()} {siteConfig.name}. {siteConfig.motto}
         </p>
 
-        <nav className="flex items-center gap-6">
+        <nav className="flex flex-wrap items-center gap-x-6 gap-y-2">
           {siteConfig.nav.map((item) => (
             <Link
               key={item.href}

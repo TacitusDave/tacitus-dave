@@ -30,7 +30,7 @@ export function ContactForm() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="rounded-md border border-border bg-background-elevated px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
+          className="rounded-md border border-border bg-background-elevated px-4 py-2.5 text-base text-foreground outline-none transition-colors focus:border-accent"
         />
       </div>
 
@@ -44,7 +44,7 @@ export function ContactForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-md border border-border bg-background-elevated px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
+          className="rounded-md border border-border bg-background-elevated px-4 py-2.5 text-base text-foreground outline-none transition-colors focus:border-accent"
         />
       </div>
 
@@ -58,7 +58,7 @@ export function ContactForm() {
           rows={5}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="resize-none rounded-md border border-border bg-background-elevated px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
+          className="resize-none rounded-md border border-border bg-background-elevated px-4 py-2.5 text-base text-foreground outline-none transition-colors focus:border-accent"
         />
       </div>
 

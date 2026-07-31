@@ -54,6 +54,31 @@ body {
   color: var(--accent-foreground);
 }
 
+/* Thin, theme-aware scrollbar. Firefox via scrollbar-width/-color;
+   WebKit/Blink via the ::-webkit-scrollbar-* pseudo-elements. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--foreground-muted);
+}
+
 /* Theme-aware backdrop: a faint grid plus two slow-drifting gradient blobs.
    Fixed behind all content; fades out toward the bottom via mask so it
    reads as an atmosphere near the top rather than a wallpaper. */

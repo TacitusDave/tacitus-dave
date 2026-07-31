@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { NavMenu } from "@/components/layout/nav-menu";
 
 export function Header() {
   return (
@@ -13,18 +14,10 @@ export function Header() {
           <span className="text-accent">$</span> {siteConfig.name}
         </Link>
 
-        <nav className="flex items-center gap-8">
-          {siteConfig.nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="font-mono text-xs uppercase tracking-widest text-foreground-muted transition-colors hover:text-accent"
-            >
-              {item.label}
-            </Link>
-          ))}
+        <div className="flex items-center gap-3">
           <ThemeToggle />
-        </nav>
+          <NavMenu />
+        </div>
       </div>
     </header>
   );
