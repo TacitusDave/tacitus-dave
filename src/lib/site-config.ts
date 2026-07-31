@@ -7,6 +7,7 @@ export const siteConfig = {
   nav: [
     { label: "About", href: "/about" },
     { label: "Projects", href: "/projects" },
+    { label: "Security", href: "/security" },
     { label: "Contact", href: "/contact" },
   ],
   // TODO: replace with real contact details before launch.
