@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { SubscribeButton } from "@/components/pricing/subscribe-button";
-import { pricingPlans } from "@/lib/pricing";
+import { pricingPlans, billingCurrencyNote } from "@/lib/pricing";
 import { labTools } from "@/lib/lab-tools";
 
 export const metadata: Metadata = {
@@ -45,7 +45,9 @@ export default function PricingPage() {
           ))}
         </div>
 
-        <p className="mt-6 text-xs text-foreground-muted">
+        <p className="mt-6 text-xs text-foreground-muted">{billingCurrencyNote}</p>
+
+        <p className="mt-2 text-xs text-foreground-muted">
           Already subscribed?{" "}
           <Link href="/lab/authorize" className="text-accent hover:underline">
             Sign in to the Lab

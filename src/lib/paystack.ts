@@ -20,7 +20,13 @@ function requireSecretKey(): string {
 
 interface InitializeTransactionParams {
   email: string;
-  /** In the currency's smallest unit — cents for USD. */
+  /**
+   * In kobo (1 naira = 100 kobo). This account bills natively in NGN — no
+   * domiciliary bank account, so Paystack's USD-settlement feature doesn't
+   * apply here. In practice Paystack charges whatever amount is configured
+   * on the Plan itself once a `plan` code is passed below; this value is
+   * sent mainly so the two stay in sync and doesn't override the Plan.
+   */
   amountMinorUnits: number;
   planCode: string;
   callbackUrl: string;
@@ -46,7 +52,6 @@ export async function initializeTransaction(params: InitializeTransactionParams)
     body: JSON.stringify({
       email: params.email,
       amount: params.amountMinorUnits,
-      currency: "USD",
       plan: params.planCode,
       callback_url: params.callbackUrl,
     }),

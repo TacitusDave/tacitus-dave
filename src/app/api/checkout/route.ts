@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     const authorizationUrl = await initializeTransaction({
       email,
-      amountMinorUnits: Math.round(planConfig.amountUsd * 100),
+      amountMinorUnits: Math.round(planConfig.amountNgn * 100),
       planCode,
       callbackUrl: `${origin}/lab/authorize?checkout=success`,
     });

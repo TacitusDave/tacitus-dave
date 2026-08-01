@@ -1,12 +1,17 @@
 export interface PricingPlan {
   id: "monthly" | "annual";
   label: string;
-  /** Display text only. */
+  /** Display text only — the reference USD price shown in the UI. */
   price: string;
   period: string;
   note?: string;
-  /** Dollars (not cents) — Paystack's API wants the smallest unit, converted at the call site. Keep this in sync with the real Paystack Plan amount. */
-  amountUsd: number;
+  /**
+   * The real charge amount, in Naira (not kobo). Paystack charges whatever
+   * amount is configured on the Plan itself when a `plan` code is passed to
+   * /transaction/initialize — this value must match that Plan's dashboard
+   * configuration exactly, or the two will silently disagree.
+   */
+  amountNgn: number;
 }
 
 /** TODO: placeholder amounts — update to match the real Paystack Plan amounts once created. */
@@ -16,7 +21,7 @@ export const pricingPlans: PricingPlan[] = [
     label: "Monthly",
     price: "$12",
     period: "/month",
-    amountUsd: 12,
+    amountNgn: 18210,
   },
   {
     id: "annual",
@@ -24,6 +29,10 @@ export const pricingPlans: PricingPlan[] = [
     price: "$99",
     period: "/year",
     note: "≈ $8.25/month",
-    amountUsd: 99,
+    amountNgn: 150233,
   },
 ];
+
+/** Shown near the price so visitors understand the $ figure is a reference, not what Paystack actually charges. */
+export const billingCurrencyNote =
+  "Billed in NGN at current exchange rates — the amount above is a USD reference price.";
