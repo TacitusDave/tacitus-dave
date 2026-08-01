@@ -20,7 +20,8 @@ function requireSecretKey(): string {
 
 interface InitializeTransactionParams {
   email: string;
-  amountKobo: number;
+  /** In the currency's smallest unit — cents for USD. */
+  amountMinorUnits: number;
   planCode: string;
   callbackUrl: string;
 }
@@ -44,7 +45,8 @@ export async function initializeTransaction(params: InitializeTransactionParams)
     },
     body: JSON.stringify({
       email: params.email,
-      amount: params.amountKobo,
+      amount: params.amountMinorUnits,
+      currency: "USD",
       plan: params.planCode,
       callback_url: params.callbackUrl,
     }),

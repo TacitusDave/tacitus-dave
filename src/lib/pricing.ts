@@ -5,8 +5,8 @@ export interface PricingPlan {
   price: string;
   period: string;
   note?: string;
-  /** Naira (not kobo) — Paystack's API wants kobo, converted at the call site. Keep this in sync with the real Paystack Plan amount. */
-  amountNaira: number;
+  /** Dollars (not cents) — Paystack's API wants the smallest unit, converted at the call site. Keep this in sync with the real Paystack Plan amount. */
+  amountUsd: number;
 }
 
 /** TODO: placeholder amounts — update to match the real Paystack Plan amounts once created. */
@@ -14,16 +14,16 @@ export const pricingPlans: PricingPlan[] = [
   {
     id: "monthly",
     label: "Monthly",
-    price: "₦4,500",
+    price: "$12",
     period: "/month",
-    amountNaira: 4500,
+    amountUsd: 12,
   },
   {
     id: "annual",
     label: "Annual",
-    price: "₦45,000",
+    price: "$99",
     period: "/year",
-    note: "≈ ₦3,750/month",
-    amountNaira: 45000,
+    note: "≈ $8.25/month",
+    amountUsd: 99,
   },
 ];

@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     const authorizationUrl = await initializeTransaction({
       email,
-      amountKobo: planConfig.amountNaira * 100,
+      amountMinorUnits: Math.round(planConfig.amountUsd * 100),
       planCode,
       callbackUrl: `${origin}/lab/authorize?checkout=success`,
     });
