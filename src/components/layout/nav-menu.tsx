@@ -4,10 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site-config";
-import { toolsByCategory } from "@/lib/lab-tools";
 import { cn } from "@/lib/cn";
-
-const toolGroups = toolsByCategory();
 
 export function NavMenu() {
   const [open, setOpen] = useState(false);
@@ -75,13 +72,13 @@ export function NavMenu() {
         id="site-nav-menu"
         role="menu"
         className={cn(
-          "absolute right-0 top-[calc(100%+0.5rem)] max-h-[75vh] w-72 origin-top-right overflow-y-auto rounded-md border border-border bg-background-elevated p-3 shadow-lg transition-[opacity,transform] duration-150",
+          "absolute right-0 top-[calc(100%+0.5rem)] w-48 origin-top-right rounded-md border border-border bg-background-elevated p-3 shadow-lg transition-[opacity,transform] duration-150",
           open
             ? "pointer-events-auto scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0",
         )}
       >
-        <div className="flex flex-col gap-0.5 border-b border-border pb-3">
+        <div className="flex flex-col gap-0.5">
           {siteConfig.nav.map((item) => (
             <Link
               key={item.href}
@@ -95,28 +92,6 @@ export function NavMenu() {
             </Link>
           ))}
         </div>
-
-        {toolGroups.map((group) => (
-          <div key={group.category} className="border-b border-border py-3 last:border-b-0 last:pb-0">
-            <p className="px-2 pb-1.5 font-mono text-[10px] uppercase tracking-widest text-foreground-muted/70">
-              {group.category}
-            </p>
-            <div className="flex flex-col gap-0.5">
-              {group.tools.map((tool) => (
-                <Link
-                  key={tool.slug}
-                  href={tool.href}
-                  role="menuitem"
-                  tabIndex={open ? 0 : -1}
-                  onClick={() => setOpen(false)}
-                  className={linkClass(tool.href)}
-                >
-                  {tool.title}
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );

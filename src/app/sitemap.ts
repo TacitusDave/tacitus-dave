@@ -3,7 +3,7 @@ import { labTools } from "@/lib/lab-tools";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
-const staticRoutes = ["/", "/about", "/projects", "/contact", "/lab"];
+const staticRoutes = ["/", "/about", "/projects", "/contact", "/lab", "/pricing"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const toolRoutes = labTools.map((tool) => tool.href);
