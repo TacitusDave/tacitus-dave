@@ -59,16 +59,26 @@ export const brandPromise = [
   "Communicate technical decisions clearly.",
 ] as const;
 
-/** Placeholder project data — replace with real case studies. */
-export const projects = [
+export interface Project {
+  slug: string;
+  title: string;
+  summary: string;
+  details: string;
+  tags: string[];
+  /** Path under /public, or undefined for projects without a screenshot yet. */
+  image?: string;
+}
+
+export const projects: Project[] = [
   {
-    slug: "placeholder-project-one",
-    title: "Project One",
+    slug: "ndukego-investments-properties",
+    title: "Ndukego Investments & Properties",
     summary:
-      "A short, concrete description of the system: what it does, the scale it runs at, and the core engineering problem it solves.",
+      "A real estate and investment platform for a Nigerian property group — verified listings, consultation booking, and financing and capital services in one site.",
     details:
-      "Replace this with the real architecture story: the constraint that shaped the design, the tradeoff that was made, and what it would look like done differently today.",
-    stack: ["TypeScript", "Next.js", "PostgreSQL"],
+      "Built for Ndukego Investments & Properties Ltd: a marketplace-style homepage with location and title search, a verified-listings pipeline, a consultation booking flow, and four service lines — real estate, LPO financing, investment capital, and consultancy — backed by live stats: 50+ verified listings, over 10 years operating in Nigeria, and more than ₦500M in properties transacted.",
+    tags: ["Real Estate", "Property Listings", "Booking Flow", "Investment Services"],
+    image: "/project1.png",
   },
   {
     slug: "placeholder-project-two",
@@ -77,7 +87,7 @@ export const projects = [
       "A short, concrete description of the system: what it does, the scale it runs at, and the core engineering problem it solves.",
     details:
       "Replace this with the real architecture story: the constraint that shaped the design, the tradeoff that was made, and what it would look like done differently today.",
-    stack: ["Go", "Kubernetes", "AWS"],
+    tags: ["Go", "Kubernetes", "AWS"],
   },
   {
     slug: "placeholder-project-three",
@@ -86,6 +96,6 @@ export const projects = [
       "A short, concrete description of the system: what it does, the scale it runs at, and the core engineering problem it solves.",
     details:
       "Replace this with the real architecture story: the constraint that shaped the design, the tradeoff that was made, and what it would look like done differently today.",
-    stack: ["Python", "Terraform", "GCP"],
+    tags: ["Python", "Terraform", "GCP"],
   },
-] as const;
+];
