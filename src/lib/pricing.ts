@@ -1,25 +1,29 @@
 export interface PricingPlan {
   id: "monthly" | "annual";
   label: string;
-  /** Display text only — the actual charge amount comes from the Stripe Price object. Update both together. */
+  /** Display text only. */
   price: string;
   period: string;
   note?: string;
+  /** Naira (not kobo) — Paystack's API wants kobo, converted at the call site. Keep this in sync with the real Paystack Plan amount. */
+  amountNaira: number;
 }
 
-/** TODO: placeholder amounts — update to match the real Stripe Price objects once created. */
+/** TODO: placeholder amounts — update to match the real Paystack Plan amounts once created. */
 export const pricingPlans: PricingPlan[] = [
   {
     id: "monthly",
     label: "Monthly",
-    price: "$9",
+    price: "₦4,500",
     period: "/month",
+    amountNaira: 4500,
   },
   {
     id: "annual",
     label: "Annual",
-    price: "$79",
+    price: "₦45,000",
     period: "/year",
-    note: "≈ $6.60/month",
+    note: "≈ ₦3,750/month",
+    amountNaira: 45000,
   },
 ];

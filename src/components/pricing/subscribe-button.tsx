@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { fieldStyles } from "@/components/lab/field-styles";
 import type { PricingPlan } from "@/lib/pricing";
 
 export function SubscribeButton({ plan, label }: { plan: PricingPlan["id"]; label: string }) {
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleClick() {
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
     setLoading(true);
     setError(null);
 
@@ -16,7 +19,7 @@ export function SubscribeButton({ plan, label }: { plan: PricingPlan["id"]; labe
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, email }),
       });
       const data = (await response.json()) as { url?: string; error?: string };
 
@@ -32,8 +35,17 @@ export function SubscribeButton({ plan, label }: { plan: PricingPlan["id"]; labe
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <Button type="button" onClick={handleClick} disabled={loading} className="w-full">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        placeholder="you@example.com"
+        className={fieldStyles}
+        aria-label={`Email for ${label}`}
+      />
+      <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Redirecting…" : label}
       </Button>
       {error ? (
@@ -41,6 +53,6 @@ export function SubscribeButton({ plan, label }: { plan: PricingPlan["id"]; labe
           {error}
         </p>
       ) : null}
-    </div>
+    </form>
   );
 }

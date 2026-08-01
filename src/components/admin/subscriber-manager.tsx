@@ -9,7 +9,6 @@ interface Subscriber {
   status: string;
   plan: string;
   currentPeriodEnd: number;
-  stripeCustomerId: string;
 }
 
 function formatDate(unixSeconds: number): string {
@@ -21,9 +20,9 @@ function formatDate(unixSeconds: number): string {
 }
 
 function statusColor(status: string, currentPeriodEnd: number): string {
-  const active = (status === "active" || status === "trialing") && currentPeriodEnd * 1000 > Date.now();
+  const active = (status === "active" || status === "manual") && currentPeriodEnd * 1000 > Date.now();
   if (active) return "#0ca30c";
-  if (status === "past_due") return "#fab219";
+  if (status === "attention" || status === "non-renewing") return "#fab219";
   return "#d03b3b";
 }
 
@@ -129,7 +128,7 @@ export function SubscriberManager() {
       <form onSubmit={handleGrant} className="flex flex-wrap items-end gap-3 rounded-md border border-border p-4">
         <div className="flex flex-1 min-w-[200px] flex-col gap-2">
           <label htmlFor="grant-email" className="font-mono text-xs uppercase tracking-widest text-foreground-muted">
-            Grant access (comp, no Stripe charge)
+            Grant access (comp, no Paystack charge)
           </label>
           <input
             id="grant-email"

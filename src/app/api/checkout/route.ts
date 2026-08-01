@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe";
+import { initializeTransaction } from "@/lib/paystack";
+import { pricingPlans } from "@/lib/pricing";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -9,17 +10,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const plan = (body as { plan?: unknown }).plan;
+  const { plan, email } = body as { plan?: unknown; email?: unknown };
+
   if (plan !== "monthly" && plan !== "annual") {
     return NextResponse.json({ error: "Choose a monthly or annual plan." }, { status: 400 });
   }
+  if (typeof email !== "string" || !email.includes("@")) {
+    return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
+  }
 
-  const priceId =
-    plan === "annual"
-      ? process.env.STRIPE_PRICE_ID_ANNUAL
-      : process.env.STRIPE_PRICE_ID_MONTHLY;
+  const planConfig = pricingPlans.find((p) => p.id === plan);
+  const planCode =
+    plan === "annual" ? process.env.PAYSTACK_PLAN_CODE_ANNUAL : process.env.PAYSTACK_PLAN_CODE_MONTHLY;
 
-  if (!priceId) {
+  if (!planConfig || !planCode) {
     return NextResponse.json(
       { error: "Pricing isn't configured yet — check back soon." },
       { status: 503 },
@@ -27,23 +31,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const stripe = getStripe();
     const origin = request.nextUrl.origin;
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/lab/authorize?checkout=success`,
-      cancel_url: `${origin}/pricing?checkout=cancelled`,
+    const authorizationUrl = await initializeTransaction({
+      email,
+      amountKobo: planConfig.amountNaira * 100,
+      planCode,
+      callbackUrl: `${origin}/lab/authorize?checkout=success`,
     });
 
-    if (!session.url) {
-      throw new Error("Stripe did not return a checkout URL.");
-    }
-
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: authorizationUrl });
   } catch (error) {
-    console.error("Checkout session creation failed:", error);
+    console.error("Paystack transaction initialization failed:", error);
     return NextResponse.json(
       { error: "Couldn't start checkout. Please try again." },
       { status: 500 },
