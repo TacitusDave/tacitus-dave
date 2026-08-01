@@ -5,6 +5,7 @@ import Image from "next/image";
 import { projects } from "@/lib/content";
 import { Badge } from "@/components/ui/badge";
 import { cardStyles } from "@/components/ui/card";
+import { ProjectLiveLink } from "@/components/projects/project-live-link";
 
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
@@ -58,6 +59,12 @@ export default async function ProjectPage({
             <Badge key={tag}>{tag}</Badge>
           ))}
         </div>
+
+        {project.liveUrl ? (
+          <div className="mt-6">
+            <ProjectLiveLink url={project.liveUrl} title={project.title} />
+          </div>
+        ) : null}
 
         {project.image ? (
           <div className="relative mt-10 aspect-video w-full overflow-hidden rounded-md border border-border">

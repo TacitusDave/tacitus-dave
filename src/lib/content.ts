@@ -67,6 +67,8 @@ export interface Project {
   tags: string[];
   /** Path under /public, or undefined for projects without a screenshot yet. */
   image?: string;
+  /** URL of the live deployed site, if it's publicly reachable. */
+  liveUrl?: string;
 }
 
 export const projects: Project[] = [
@@ -79,6 +81,7 @@ export const projects: Project[] = [
       "Built for Ndukego Investments & Properties Ltd: a marketplace-style homepage with location and title search, a verified-listings pipeline, a consultation booking flow, and four service lines — real estate, LPO financing, investment capital, and consultancy — backed by live stats: 50+ verified listings, over 10 years operating in Nigeria, and more than ₦500M in properties transacted.",
     tags: ["Real Estate", "Property Listings", "Booking Flow", "Investment Services"],
     image: "/project1.png",
+    liveUrl: "https://ndukego-ltd.vercel.app",
   },
   {
     slug: "placeholder-project-two",
