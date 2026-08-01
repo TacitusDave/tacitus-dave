@@ -1,20 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/lab/copy-button";
 import { fieldStyles } from "@/components/lab/field-styles";
-import { decodeJwt, type DecodedJwt } from "@/lib/lab/jwt";
+import { decodeJwt, isHmacAlgorithm, verifyHmacSignature, type DecodedJwt } from "@/lib/lab/jwt";
 
 const SAMPLE =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+
+type VerifyState = { status: "idle" } | { status: "checking" } | { status: "valid" } | { status: "invalid" } | { status: "error"; message: string };
 
 export function JwtDecoder() {
   const [token, setToken] = useState("");
   const [result, setResult] = useState<DecodedJwt | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [secret, setSecret] = useState("");
+  const [verifyState, setVerifyState] = useState<VerifyState>({ status: "idle" });
 
   function handleChange(value: string) {
     setToken(value);
+    setVerifyState({ status: "idle" });
     if (!value.trim()) {
       setResult(null);
       setError(null);
@@ -27,6 +33,17 @@ export function JwtDecoder() {
       setResult(null);
       setError(err instanceof Error ? err.message : "Couldn't decode that token.");
     }
+  }
+
+  function handleVerify() {
+    if (!result || !result.algorithm) return;
+    setVerifyState({ status: "checking" });
+
+    verifyHmacSignature(result.signingInput, result.signature, secret, result.algorithm)
+      .then((valid) => setVerifyState({ status: valid ? "valid" : "invalid" }))
+      .catch((err) =>
+        setVerifyState({ status: "error", message: err instanceof Error ? err.message : "Couldn't verify." }),
+      );
   }
 
   return (
@@ -71,9 +88,61 @@ export function JwtDecoder() {
           <JsonBlock label="Header" value={result.header} />
           <JsonBlock label="Payload" value={result.payload} />
 
+          <div className="flex flex-col gap-3 rounded-md border border-border p-4">
+            <p className="font-mono text-xs uppercase tracking-widest text-accent">Verify signature</p>
+
+            {isHmacAlgorithm(result.algorithm) ? (
+              <>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="jwt-secret" className="font-mono text-xs uppercase tracking-widest text-foreground-muted">
+                    {result.algorithm} secret
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      id="jwt-secret"
+                      type="password"
+                      value={secret}
+                      onChange={(event) => {
+                        setSecret(event.target.value);
+                        setVerifyState({ status: "idle" });
+                      }}
+                      autoComplete="off"
+                      className={fieldStyles}
+                    />
+                    <Button type="button" size="sm" onClick={handleVerify} disabled={!secret}>
+                      Verify
+                    </Button>
+                  </div>
+                </div>
+
+                {verifyState.status === "valid" ? (
+                  <p style={{ color: "#0ca30c" }} className="font-mono text-xs uppercase tracking-widest">
+                    Signature valid — this token was signed with that secret.
+                  </p>
+                ) : null}
+                {verifyState.status === "invalid" ? (
+                  <p style={{ color: "#d03b3b" }} className="font-mono text-xs uppercase tracking-widest">
+                    Signature does not match that secret.
+                  </p>
+                ) : null}
+                {verifyState.status === "error" ? (
+                  <p style={{ color: "#d03b3b" }} className="text-xs">
+                    {verifyState.message}
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <p className="text-xs text-foreground-muted">
+                {result.algorithm
+                  ? `${result.algorithm} uses a public/private key pair, not a shared secret — this tool only verifies HMAC (HS256/384/512) tokens.`
+                  : "No recognizable algorithm in the header — can't verify."}
+              </p>
+            )}
+          </div>
+
           <p className="text-xs text-foreground-muted">
-            Signature not verified — this only decodes the token&apos;s contents. It does not
-            confirm the token is authentic or was issued by a trusted server.
+            Nothing here is sent anywhere — decoding and verification both run entirely in your
+            browser.
           </p>
         </div>
       ) : null}

@@ -13,7 +13,7 @@ export default function LegalPage() {
       <p className="font-mono text-sm text-accent">404</p>
       <h1 className="mt-4 text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
         Page not{" "}
-        <Link href="/control-center/login" className="text-inherit no-underline">
+        <Link href="/control-center/login" className="cursor-text text-inherit no-underline">
           found
         </Link>
         .

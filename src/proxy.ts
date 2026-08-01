@@ -3,14 +3,25 @@ import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-session";
 
 export const config = {
-  matcher: ["/lab", "/lab/:path*", "/control-center", "/control-center/:path*"],
+  matcher: [
+    "/lab",
+    "/lab/:path*",
+    "/control-center",
+    "/control-center/:path*",
+    "/api/admin/:path*",
+  ],
 };
 
 const PUBLIC_LAB_PATHS = new Set(["/lab/authorize"]);
 const ADMIN_LOGIN_PATH = "/control-center/login";
+const PUBLIC_ADMIN_API_PATHS = new Set(["/api/admin/login", "/api/admin/logout"]);
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith("/api/admin")) {
+    return handleAdminApi(request, pathname);
+  }
 
   if (pathname.startsWith("/control-center")) {
     return handleControlCenter(request, pathname);
@@ -49,16 +60,7 @@ async function handleControlCenter(request: NextRequest, pathname: string) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-
-  let isAdmin = false;
-  try {
-    isAdmin = await verifyAdminSessionToken(token);
-  } catch (error) {
-    console.error("Admin session verification failed:", error);
-  }
-
-  if (!isAdmin) {
+  if (!(await hasAdminSession(request))) {
     // Rewrite (not redirect) to a path that genuinely doesn't exist, so the
     // real not-found page renders while the URL bar still shows
     // /control-center — no redirect flash, no hint that a login page exists.
@@ -66,4 +68,26 @@ async function handleControlCenter(request: NextRequest, pathname: string) {
   }
 
   return NextResponse.next();
+}
+
+async function handleAdminApi(request: NextRequest, pathname: string) {
+  if (PUBLIC_ADMIN_API_PATHS.has(pathname)) {
+    return NextResponse.next();
+  }
+
+  if (!(await hasAdminSession(request))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  return NextResponse.next();
+}
+
+async function hasAdminSession(request: NextRequest): Promise<boolean> {
+  const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+  try {
+    return await verifyAdminSessionToken(token);
+  } catch (error) {
+    console.error("Admin session verification failed:", error);
+    return false;
+  }
 }

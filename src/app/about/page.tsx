@@ -43,17 +43,21 @@ export default function AboutPage() {
             </h1>
 
             <p className="mt-4 max-w-2xl text-lg text-foreground-muted">
-              {siteConfig.name} builds systems, then makes sure they hold up under real
-              conditions. This platform is both a demonstration of that work and a running log of
-              how it&apos;s built — every tool here is real, runs in your browser, and does what
-              it says.
+              I&apos;m the engineer behind this platform. I work across software development and
+              security, and I built Tacitus Dave OS because I was tired of portfolios that
+              describe skills instead of demonstrating them — everything you can click, type
+              into, or run on this site, I built myself, and it does what it says.
             </p>
 
             <p className="mt-4 max-w-2xl text-sm text-foreground-muted">
-              Security shouldn&apos;t be an afterthought added after development — it belongs in
-              every stage of system design, implementation, deployment, and operation. That
-              conviction shapes everything on this site, from the architecture walkthroughs to
-              the simulated SOC dashboard to the tools in the Lab.
+              I got into this field the way a lot of people do: by breaking things first and
+              learning how they worked afterward. That instinct — take it apart, understand the
+              failure mode, put it back together more resilient — is still how I approach most of
+              my work. I care about systems that are boring in the best way: predictable,
+              observable, and hard to break by accident. Security isn&apos;t a checklist bolted on
+              at the end; it&apos;s a habit built into how something gets designed from the first
+              line of code. That&apos;s the thread running through everything here, from the
+              architecture walkthroughs to the tools in the Lab.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">

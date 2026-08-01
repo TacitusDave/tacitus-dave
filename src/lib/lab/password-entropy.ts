@@ -38,3 +38,36 @@ export function analyzePassword(password: string): EntropyResult {
 
   return { bits, poolSize, label, color };
 }
+
+export interface GeneratorOptions {
+  length: number;
+  lowercase: boolean;
+  uppercase: boolean;
+  digits: boolean;
+  symbols: boolean;
+}
+
+const CHAR_SETS = {
+  lowercase: "abcdefghijklmnopqrstuvwxyz",
+  uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  digits: "0123456789",
+  symbols: "!@#$%^&*()-_=+[]{};:,.<>?",
+};
+
+/** Cryptographically random, not Math.random — safe to actually use as a password. */
+export function generatePassword(options: GeneratorOptions): string {
+  const pool = (
+    (options.lowercase ? CHAR_SETS.lowercase : "") +
+    (options.uppercase ? CHAR_SETS.uppercase : "") +
+    (options.digits ? CHAR_SETS.digits : "") +
+    (options.symbols ? CHAR_SETS.symbols : "")
+  );
+  if (!pool) return "";
+
+  const randomValues = crypto.getRandomValues(new Uint32Array(options.length));
+  let password = "";
+  for (let i = 0; i < options.length; i++) {
+    password += pool[randomValues[i] % pool.length];
+  }
+  return password;
+}

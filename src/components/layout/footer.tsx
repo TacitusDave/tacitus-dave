@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
         <p className="font-mono text-xs text-foreground-muted">
-          <Link href="/legal" className="text-inherit no-underline">
+          <Link href="/legal" className="cursor-text text-inherit no-underline">
             © {new Date().getFullYear()}
           </Link>{" "}
           {siteConfig.name}. {siteConfig.motto}
