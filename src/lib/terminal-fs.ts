@@ -1,4 +1,5 @@
 import { siteConfig } from "@/lib/site-config";
+import { focusAreas } from "@/lib/content";
 
 export interface FsFile {
   type: "file";
@@ -27,8 +28,7 @@ export const fsRoot: FsDir = {
     },
     "skills.txt": {
       type: "file",
-      content:
-        "TypeScript · Next.js · Go · Kubernetes · AWS · Terraform · Security Engineering",
+      content: focusAreas.join(" · "),
     },
     "contact.txt": {
       type: "file",

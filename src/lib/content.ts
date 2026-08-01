@@ -1,3 +1,13 @@
+export const focusAreas = [
+  "TypeScript",
+  "Next.js",
+  "Go",
+  "Kubernetes",
+  "AWS",
+  "Terraform",
+  "Security Engineering",
+] as const;
+
 export const pillars = [
   {
     title: "Engineering Excellence",
