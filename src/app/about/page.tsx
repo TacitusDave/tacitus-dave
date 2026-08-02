@@ -39,14 +39,25 @@ export default function AboutPage() {
             </div>
 
             <h1 className="mt-4 text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
-              Bridging software engineering and cybersecurity.
+              Full-stack developer. SOC analyst. One discipline, not two jobs.
             </h1>
 
             <p className="mt-4 max-w-2xl text-lg text-foreground-muted">
-              I&apos;m the engineer behind this platform. I work across software development and
-              security, and I built Tacitus Dave OS because I was tired of portfolios that
-              describe skills instead of demonstrating them — everything you can click, type
-              into, or run on this site, I built myself, and it does what it says.
+              I&apos;m the engineer behind this platform. I design, build, and secure modern web
+              and mobile applications, and I built Tacitus Dave OS because I was tired of
+              portfolios that describe skills instead of demonstrating them — everything you can
+              click, type into, or run on this site, I built myself, and it does what it says.
+            </p>
+
+            <p className="mt-4 max-w-2xl text-sm text-foreground-muted">
+              My work splits across two disciplines most people treat as separate. On one side:
+              production-ready web and mobile applications — responsive interfaces, scalable
+              backend APIs, systems that hold up under real load. On the other: the SOC side of
+              the job — monitoring security events, investigating incidents, running threat
+              detection and vulnerability assessment, reading logs closely enough to catch what
+              shouldn&apos;t be there. I don&apos;t treat these as two jobs. Security shapes how I
+              design software from the first line of code, and understanding a system at the
+              architecture level is what makes me useful defending one.
             </p>
 
             <p className="mt-4 max-w-2xl text-sm text-foreground-muted">
@@ -54,10 +65,14 @@ export default function AboutPage() {
               learning how they worked afterward. That instinct — take it apart, understand the
               failure mode, put it back together more resilient — is still how I approach most of
               my work. I care about systems that are boring in the best way: predictable,
-              observable, and hard to break by accident. Security isn&apos;t a checklist bolted on
-              at the end; it&apos;s a habit built into how something gets designed from the first
-              line of code. That&apos;s the thread running through everything here, from the
-              architecture walkthroughs to the tools in the Lab.
+              observable, and hard to break by accident. That&apos;s the thread running through
+              everything here, from the architecture walkthroughs to the tools in the Lab.
+            </p>
+
+            <p className="mt-6 max-w-2xl border-l-2 border-accent pl-4 font-mono text-sm text-accent">
+              Great software isn&apos;t only functional — it&apos;s secure, scalable, reliable,
+              and built to create lasting value. Always learning. Always building. Always
+              improving.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">

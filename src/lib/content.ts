@@ -1,11 +1,16 @@
 export const focusAreas = [
   "TypeScript",
+  "React",
   "Next.js",
-  "Go",
-  "Kubernetes",
-  "AWS",
-  "Terraform",
-  "Security Engineering",
+  "Python",
+  "Django",
+  "PostgreSQL",
+  "React Native",
+  "Docker",
+  "SOC Operations",
+  "SIEM",
+  "Threat Detection",
+  "Incident Response",
 ] as const;
 
 export const pillars = [

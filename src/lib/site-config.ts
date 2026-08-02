@@ -3,7 +3,7 @@ export const siteConfig = {
   platform: "Tacitus Dave OS",
   motto: "Build Secure. Think Deep. Ship with Confidence.",
   description:
-    "A premium engineering and cybersecurity brand dedicated to building, securing, deploying, documenting, and operating modern digital systems.",
+    "Full-stack developer and SOC analyst building production-ready systems that solve real-world problems — reliable, scalable, and secure from the first line of code.",
   nav: [
     { label: "About", href: "/about" },
     { label: "Projects", href: "/projects" },
