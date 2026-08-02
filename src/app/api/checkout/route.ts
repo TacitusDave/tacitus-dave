@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       email,
       amountMinorUnits: Math.round(planConfig.amountNgn * 100),
       planCode,
-      callbackUrl: `${origin}/lab/authorize?checkout=success`,
+      callbackUrl: `${origin}/lab/authorize?checkout=success&email=${encodeURIComponent(email)}`,
     });
 
     return NextResponse.json({ url: authorizationUrl });

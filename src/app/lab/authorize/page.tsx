@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { AuthorizeFlow } from "@/components/lab/authorize-flow";
 
@@ -17,7 +18,9 @@ export default function AuthorizePage() {
       />
 
       <section className="mx-auto max-w-md px-6 py-12">
-        <AuthorizeFlow />
+        <Suspense fallback={<div className="h-40 animate-pulse rounded-md border border-border bg-background-elevated/40" />}>
+          <AuthorizeFlow />
+        </Suspense>
       </section>
     </>
   );

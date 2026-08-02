@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { fieldStyles } from "@/components/lab/field-styles";
 
@@ -9,12 +9,54 @@ type Step = "email" | "code";
 
 export function AuthorizeFlow() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const autoEmail = searchParams.get("email");
+
   const [step, setStep] = useState<Step>("email");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(autoEmail ?? "");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  // Straight after a successful checkout redirect we already know the
+  // subscriber's email, so request their code automatically instead of
+  // making them type it in again. Falls back to the manual form on failure.
+  const autoAuthorizing = step === "email" && Boolean(autoEmail) && !error;
+
+  useEffect(() => {
+    if (!autoEmail) return;
+
+    let cancelled = false;
+
+    fetch("/api/auth/request-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: autoEmail }),
+    })
+      .then((response) =>
+        response
+          .json()
+          .catch(() => ({}))
+          .then((data: { error?: string }) => ({ ok: response.ok, data })),
+      )
+      .then(({ ok, data }) => {
+        if (cancelled) return;
+        if (!ok) {
+          setError(data.error || "Something went wrong.");
+          return;
+        }
+        setNotice("If that email has an active subscription, a code is on its way.");
+        setStep("code");
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Something went wrong.");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [autoEmail]);
 
   async function handleRequestCode(event: React.FormEvent) {
     event.preventDefault();
@@ -62,6 +104,16 @@ export function AuthorizeFlow() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (autoAuthorizing) {
+    return (
+      <div className="flex flex-col gap-4">
+        <p className="text-sm text-foreground-muted">
+          Confirming your subscription for <span className="text-foreground">{autoEmail}</span>…
+        </p>
+      </div>
+    );
   }
 
   if (step === "email") {
