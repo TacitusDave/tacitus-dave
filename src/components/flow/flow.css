@@ -1,0 +1,49 @@
+/* Re-themes React Flow's default light palette to match this site's
+   existing --background / --border / --accent custom properties, so it
+   follows the same light/dark toggle as everything else on the site. */
+.flow-canvas-wrapper {
+  --xy-background-color: var(--background);
+  --xy-background-pattern-color: var(--border);
+
+  --xy-edge-stroke: var(--border);
+  --xy-edge-stroke-selected: var(--accent);
+  --xy-edge-label-background-color: var(--background-elevated);
+  --xy-edge-label-color: var(--foreground-muted);
+
+  --xy-handle-background-color: var(--accent);
+  --xy-handle-border-color: var(--background);
+
+  --xy-controls-button-background-color: var(--background-elevated);
+  --xy-controls-button-background-color-hover: var(--background);
+  --xy-controls-button-color: var(--foreground-muted);
+  --xy-controls-button-color-hover: var(--accent);
+  --xy-controls-button-border-color: var(--border);
+  --xy-controls-box-shadow: none;
+
+  --xy-minimap-background-color: var(--background-elevated);
+  --xy-minimap-mask-background-color: rgba(var(--accent-rgb), 0.08);
+  --xy-minimap-mask-stroke-color: var(--accent);
+  --xy-minimap-node-background-color: var(--border);
+
+  --xy-attribution-background-color: transparent;
+}
+
+.flow-canvas-wrapper .react-flow__controls {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.flow-canvas-wrapper .react-flow__controls-button {
+  border-bottom: 1px solid var(--border);
+}
+
+.flow-canvas-wrapper .react-flow__minimap {
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.flow-canvas-wrapper .react-flow__attribution {
+  font-family: var(--font-mono);
+  font-size: 10px;
+}

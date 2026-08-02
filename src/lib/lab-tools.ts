@@ -47,6 +47,14 @@ export const labTools: LabTool[] = [
     kind: "flagship",
   },
   {
+    slug: "flow",
+    href: "/flow",
+    title: "Flow Builder",
+    tagline: "A drag-and-connect canvas for architecture, pipelines, and decision trees.",
+    category: "Developer Utilities",
+    kind: "flagship",
+  },
+  {
     slug: "jwt-decoder",
     href: "/lab/jwt-decoder",
     title: "JWT Decoder",
