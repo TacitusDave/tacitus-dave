@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
-import { Card, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { SubscribeButton } from "@/components/pricing/subscribe-button";
 import { pricingPlans, billingCurrencyNote } from "@/lib/pricing";
 import { labTools } from "@/lib/lab-tools";
@@ -12,7 +12,6 @@ export const metadata: Metadata = {
     "Subscribe to unlock the full Tacitus Dave Lab — a premium, ever-expanding suite of developer and security utilities, crafted for professionals who won't settle for the free-tier version.",
 };
 
-const labUtilities = labTools.filter((tool) => tool.kind === "utility");
 const flagshipTools = labTools.filter((tool) => tool.kind === "flagship");
 
 export default function PricingPage() {
@@ -70,26 +69,6 @@ export default function PricingPage() {
           </Link>
           .
         </p>
-      </section>
-
-      <section className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-accent">
-            What&apos;s included
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm text-foreground-muted">
-            Every tool below is built to the same exacting standard, engineered for precision
-            and speed rather than thrown together as a gimmick.
-          </p>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {labUtilities.map((tool) => (
-              <Card key={tool.slug}>
-                <CardTitle>{tool.title}</CardTitle>
-                <CardDescription>{tool.tagline}</CardDescription>
-              </Card>
-            ))}
-          </div>
-        </div>
       </section>
 
       <section className="border-t border-border">

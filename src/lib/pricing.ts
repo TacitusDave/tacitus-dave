@@ -7,7 +7,7 @@ export interface PricingPlan {
   price: string;
   period: string;
   note?: string;
-  /** Highlight badge shown on the card, e.g. "Best value". */
+  /** Highlight badge shown on the card, e.g. "Recommended" or "Best value". */
   highlight?: string;
   /** Bullet list of what the plan includes, rendered on the pricing card. */
   features: string[];
@@ -20,34 +20,35 @@ export interface PricingPlan {
   amountNgn: number;
 }
 
-const sharedFeatures = [
-  "Every utility in the Lab, unlocked — no per-tool paywalls, no usage caps",
-  "New tools and refinements added continuously, at no extra charge",
-  "Direct email support from the engineer who builds the tools",
-];
-
 export const pricingPlans: PricingPlan[] = [
   {
     id: "monthly",
     label: "Monthly",
-    tagline: "The full toolkit, on your terms — billed month to month.",
+    tagline: "Complete access, on your own schedule.",
     price: "$12",
     period: "/month",
-    features: [...sharedFeatures, "Cancel anytime — no contracts, no lock-in"],
+    highlight: "Recommended",
+    features: [
+      "Unrestricted access to every tool in the Lab — nothing gated, nothing capped",
+      "Every new tool added to the Lab, available to you the moment it ships",
+      "Direct email support from the engineer who builds the tools",
+      "Full flexibility — cancel any month, no questions asked",
+    ],
     amountNgn: 18210,
   },
   {
     id: "annual",
     label: "Annual",
-    tagline: "The same complete toolkit, at the best rate available.",
+    tagline: "Complete access, secured at the best possible rate.",
     price: "$99",
     period: "/year",
     note: "≈ $8.25/month — save 31% versus paying monthly",
     highlight: "Best value",
     features: [
-      ...sharedFeatures,
-      "Save 31% versus paying monthly",
-      "One annual charge — your rate is locked in for the full year",
+      "Unrestricted access to every tool in the Lab — nothing gated, nothing capped",
+      "Every new tool added to the Lab, available to you the moment it ships",
+      "Direct email support from the engineer who builds the tools",
+      "One payment secures a full year at 31% less than paying monthly",
     ],
     amountNgn: 150233,
   },
