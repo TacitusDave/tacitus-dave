@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { fieldStyles } from "@/components/lab/field-styles";
 
-type Step = "email" | "code";
+type Step = "email" | "code" | "owner";
 
 export function AuthorizeFlow() {
   const router = useRouter();
@@ -15,6 +15,7 @@ export function AuthorizeFlow() {
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState(autoEmail ?? "");
   const [code, setCode] = useState("");
+  const [ownerCode, setOwnerCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -82,6 +83,30 @@ export function AuthorizeFlow() {
     }
   }
 
+  async function handleOwnerCode(event: React.FormEvent) {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/auth/owner-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: ownerCode }),
+      });
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) {
+        throw new Error(data.error || "Invalid access code.");
+      }
+      router.push("/lab");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleVerifyCode(event: React.FormEvent) {
     event.preventDefault();
     setLoading(true);
@@ -136,6 +161,53 @@ export function AuthorizeFlow() {
         <Button type="submit" disabled={loading}>
           {loading ? "Sending…" : "Send Access Code"}
         </Button>
+        <button
+          type="button"
+          onClick={() => {
+            setError(null);
+            setStep("owner");
+          }}
+          className="self-start text-xs text-foreground-muted transition-colors hover:text-accent"
+        >
+          Have an access code instead?
+        </button>
+      </form>
+    );
+  }
+
+  if (step === "owner") {
+    return (
+      <form onSubmit={handleOwnerCode} className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="authorize-owner-code" className="font-mono text-xs uppercase tracking-widest text-foreground-muted">
+            Access code
+          </label>
+          <input
+            id="authorize-owner-code"
+            type="text"
+            required
+            autoComplete="off"
+            value={ownerCode}
+            onChange={(event) => setOwnerCode(event.target.value)}
+            className={fieldStyles}
+          />
+        </div>
+        {error ? <p style={{ color: "#d03b3b" }} className="text-sm">{error}</p> : null}
+        <div className="flex gap-3">
+          <Button type="submit" disabled={loading || !ownerCode.trim()}>
+            {loading ? "Verifying…" : "Enter the Lab"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              setError(null);
+              setStep("email");
+            }}
+          >
+            Back
+          </Button>
+        </div>
       </form>
     );
   }

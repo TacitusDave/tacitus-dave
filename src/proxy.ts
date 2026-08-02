@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-session";
+import { getSubscriber, isActiveSubscriber } from "@/lib/subscribers";
+import { OWNER_SESSION_EMAIL } from "@/lib/owner-code";
 
 export const config = {
   matcher: [
@@ -46,13 +48,33 @@ async function handleLab(request: NextRequest, pathname: string) {
   }
 
   if (!email) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/pricing";
-    url.searchParams.set("from", pathname);
-    return NextResponse.redirect(url);
+    return redirectToPricing(request, pathname);
+  }
+
+  // The owner's bypass session isn't tied to a subscriber record, so it has
+  // nothing to check here — its only revocation path is rotating the code.
+  if (email !== OWNER_SESSION_EMAIL) {
+    try {
+      const subscriber = await getSubscriber(email);
+      if (!isActiveSubscriber(subscriber)) {
+        return redirectToPricing(request, pathname);
+      }
+    } catch (error) {
+      // Redis unreachable — fail open. The signed session is still evidence
+      // of a legitimate prior grant; an outage shouldn't lock out every
+      // existing subscriber at once over an unrelated infrastructure issue.
+      console.error("Subscriber status check failed:", error);
+    }
   }
 
   return NextResponse.next();
+}
+
+function redirectToPricing(request: NextRequest, pathname: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = "/pricing";
+  url.searchParams.set("from", pathname);
+  return NextResponse.redirect(url);
 }
 
 async function handleControlCenter(request: NextRequest, pathname: string) {

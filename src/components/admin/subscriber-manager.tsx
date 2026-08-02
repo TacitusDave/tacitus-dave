@@ -105,7 +105,7 @@ export function SubscriberManager() {
   async function handleRevoke(email: string) {
     const ok = await callAction("/api/admin/subscribers/revoke", { email }, email);
     if (ok) {
-      setNotice(`Revoked access for ${email}.`);
+      setNotice(`Deactivated ${email} — their session and access are revoked immediately.`);
       loadSubscribers();
     }
   }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { SubscriberManager } from "@/components/admin/subscriber-manager";
+import { OwnerCodePanel } from "@/components/admin/owner-code-panel";
+import { ActivityLog } from "@/components/admin/activity-log";
 
 export const metadata: Metadata = {
   title: "Control Center",
@@ -20,6 +22,11 @@ export default function ControlCenterPage() {
 
       <div className="mt-8">
         <SubscriberManager />
+      </div>
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <OwnerCodePanel />
+        <ActivityLog />
       </div>
     </section>
   );
