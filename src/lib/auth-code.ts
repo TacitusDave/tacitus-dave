@@ -20,8 +20,11 @@ export async function createAuthCode(email: string): Promise<string> {
 /** One-time use: a valid code is deleted immediately after a successful check. */
 export async function verifyAuthCode(email: string, code: string): Promise<boolean> {
   const redis = getRedis();
-  const stored = await redis.get<string>(codeKey(email));
-  if (!stored || stored !== code) return false;
+  // Upstash auto-parses JSON-number-looking strings back into a `number` on
+  // read (e.g. a code like "973555" round-trips as 973555), so this must
+  // compare as strings rather than trust the declared <string> generic.
+  const stored = await redis.get<string | number>(codeKey(email));
+  if (stored === null || stored === undefined || String(stored) !== code) return false;
   await redis.del(codeKey(email));
   return true;
 }
