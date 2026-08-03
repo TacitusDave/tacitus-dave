@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const valid = await verifyOwnerCode(code.trim());
+    const valid = verifyOwnerCode(code.trim());
     if (!valid) {
       await recordFailure(RATE_LIMIT_SCOPE, identifier).catch(() => {});
       return NextResponse.json({ error: "Invalid access code." }, { status: 401 });

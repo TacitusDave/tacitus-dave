@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/lab/copy-button";
 
-interface OwnerCodeRecord {
+interface OwnerCodeInfo {
   code: string;
-  rotatedAt: number;
+  validUntil: number;
 }
 
 function formatDate(unixSeconds: number): string {
@@ -20,23 +20,39 @@ function formatDate(unixSeconds: number): string {
 }
 
 export function OwnerCodePanel() {
-  const [record, setRecord] = useState<OwnerCodeRecord | null | undefined>(undefined);
+  const [info, setInfo] = useState<OwnerCodeInfo | null | undefined>(undefined);
   const [revealed, setRevealed] = useState(false);
-  const [rotating, setRotating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  function fetchCode(): Promise<void> {
+    return fetch("/api/admin/owner-code")
+      .then((response) => response.json())
+      .then((data: { info?: OwnerCodeInfo; error?: string }) => {
+        if (data.error) throw new Error(data.error);
+        setInfo(data.info ?? null);
+      })
+      .catch((err) => {
+        setInfo(null);
+        setError(err instanceof Error ? err.message : "Failed to load access code.");
+      });
+  }
 
   useEffect(() => {
     let cancelled = false;
 
     fetch("/api/admin/owner-code")
       .then((response) => response.json())
-      .then((data: { record?: OwnerCodeRecord | null; error?: string }) => {
+      .then((data: { info?: OwnerCodeInfo; error?: string }) => {
         if (cancelled) return;
         if (data.error) throw new Error(data.error);
-        setRecord(data.record ?? null);
+        setInfo(data.info ?? null);
       })
       .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load access code.");
+        if (!cancelled) {
+          setInfo(null);
+          setError(err instanceof Error ? err.message : "Failed to load access code.");
+        }
       });
 
     return () => {
@@ -44,23 +60,10 @@ export function OwnerCodePanel() {
     };
   }, []);
 
-  async function handleRotate() {
-    setRotating(true);
+  function handleRefresh() {
+    setLoading(true);
     setError(null);
-    try {
-      const response = await fetch("/api/admin/owner-code", { method: "POST" });
-      const data = (await response.json().catch(() => ({}))) as {
-        record?: OwnerCodeRecord;
-        error?: string;
-      };
-      if (!response.ok) throw new Error(data.error || "Failed to rotate access code.");
-      setRecord(data.record ?? null);
-      setRevealed(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to rotate access code.");
-    } finally {
-      setRotating(false);
-    }
+    fetchCode().finally(() => setLoading(false));
   }
 
   return (
@@ -69,25 +72,31 @@ export function OwnerCodePanel() {
         Owner access code
       </h2>
       <p className="mt-2 text-xs text-foreground-muted">
-        Bypasses billing entirely — enter this at /lab/authorize for free Lab access. Rotate it
-        any time (e.g. if you suspect someone else has seen it); the old code stops working the
-        instant you do.
+        Bypasses billing entirely — enter this at /lab/authorize for free Lab access. It rotates
+        itself automatically every 12 hours, so there&apos;s nothing to click and nothing that
+        depends on a database — a leaked code is only useful until its own expiry below.
       </p>
 
-      {record === undefined ? (
+      {info === undefined ? (
         <p className="mt-4 text-sm text-foreground-muted">Loading…</p>
-      ) : record === null ? (
-        <p className="mt-4 text-sm text-foreground-muted">No code generated yet.</p>
+      ) : info === null ? (
+        <p className="mt-4 text-sm text-foreground-muted">
+          Not configured yet — add <code className="font-mono text-accent">OWNER_CODE_SECRET</code>{" "}
+          to your environment variables (see <code className="font-mono">.env.example</code> for
+          how to generate one).
+        </p>
       ) : (
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <code className="rounded-md border border-border bg-background-elevated px-3 py-2 font-mono text-sm text-foreground">
-            {revealed ? record.code : "•".repeat(record.code.length)}
+          <code className="rounded-md border border-border bg-background-elevated px-3 py-2 font-mono text-sm tracking-widest text-foreground">
+            {revealed ? info.code : "•".repeat(info.code.length)}
           </code>
           <Button type="button" variant="outline" size="sm" onClick={() => setRevealed((v) => !v)}>
             {revealed ? "Hide" : "Reveal"}
           </Button>
-          <CopyButton value={record.code} />
-          <span className="text-xs text-foreground-muted">Rotated {formatDate(record.rotatedAt)}</span>
+          <CopyButton value={info.code} />
+          <span className="text-xs text-foreground-muted">
+            Rotates at {formatDate(info.validUntil)}
+          </span>
         </div>
       )}
 
@@ -97,9 +106,18 @@ export function OwnerCodePanel() {
         </p>
       ) : null}
 
-      <Button type="button" className="mt-4" disabled={rotating} onClick={handleRotate}>
-        {rotating ? "Rotating…" : "Rotate code"}
-      </Button>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Button type="button" variant="outline" size="sm" disabled={loading} onClick={handleRefresh}>
+          {loading ? "Refreshing…" : "Refresh"}
+        </Button>
+        <span className="text-xs text-foreground-muted">
+          Need it dead right now, not in up to 12 hours? Run{" "}
+          <code className="font-mono text-accent">node scripts/generate-owner-code-secret.mjs</code>{" "}
+          locally, replace <code className="font-mono">OWNER_CODE_SECRET</code> in Vercel with the
+          new value, and redeploy — that invalidates every code generated from the old secret
+          immediately.
+        </span>
+      </div>
     </div>
   );
 }
