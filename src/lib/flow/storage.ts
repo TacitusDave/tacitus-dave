@@ -12,7 +12,7 @@ export function serializeFlow(nodes: Node[], edges: Edge[]): StoredFlow {
   return {
     nodes: nodes.map((node) => ({
       ...node,
-      data: { label: node.data.label, kind: node.data.kind },
+      data: { label: node.data.label, kind: node.data.kind, iconName: node.data.iconName },
     })),
     edges: edges.map((edge) => ({
       ...edge,

@@ -50,7 +50,7 @@ export const labTools: LabTool[] = [
     slug: "flow",
     href: "/flow",
     title: "Flow Builder",
-    tagline: "A drag-and-connect canvas for architecture, pipelines, and decision trees.",
+    tagline: "A general design canvas — flowcharts, shapes, icons, and wireframes, drag-and-connect.",
     category: "Developer Utilities",
     kind: "flagship",
   },

@@ -29,6 +29,7 @@ import { FlowEdge, type FlowEdgeData } from "./flow-edge";
 import { FlowToolbar } from "./flow-toolbar";
 import type { FlowNodeKind } from "@/lib/flow/types";
 import { nodeKinds } from "@/lib/flow/types";
+import { iconLabel } from "@/lib/flow/icons";
 import { layoutFlow } from "@/lib/flow/layout";
 import { loadFlow, saveFlow, serializeFlow } from "@/lib/flow/storage";
 
@@ -105,6 +106,7 @@ function FlowCanvasInner() {
       data: {
         label: String(raw.data.label ?? "Untitled"),
         kind: (raw.data.kind ?? "process") as FlowNodeKind,
+        iconName: typeof raw.data.iconName === "string" ? raw.data.iconName : undefined,
         updateLabel: (label: string) => updateNodeLabel(raw.id, label),
       } satisfies FlowNodeData,
     }),
@@ -189,25 +191,29 @@ function FlowCanvasInner() {
     [pushHistory, setEdges, updateEdgeLabel],
   );
 
+  const nextSpawnPosition = useCallback(() => {
+    addOffsetRef.current += 1;
+    const offset = (addOffsetRef.current % 6) * 24;
+
+    const center = wrapperRef.current
+      ? screenToFlowPosition({
+          x: wrapperRef.current.getBoundingClientRect().left + wrapperRef.current.clientWidth / 2,
+          y: wrapperRef.current.getBoundingClientRect().top + wrapperRef.current.clientHeight / 2,
+        })
+      : { x: 200, y: 200 };
+
+    return { x: center.x + offset - 80, y: center.y + offset - 30 };
+  }, [screenToFlowPosition]);
+
   const addNode = useCallback(
     (kind: FlowNodeKind) => {
       pushHistory();
       const meta = nodeKinds.find((k) => k.kind === kind);
-      addOffsetRef.current += 1;
-      const offset = (addOffsetRef.current % 6) * 24;
-
-      const center = wrapperRef.current
-        ? screenToFlowPosition({
-            x: wrapperRef.current.getBoundingClientRect().left + wrapperRef.current.clientWidth / 2,
-            y: wrapperRef.current.getBoundingClientRect().top + wrapperRef.current.clientHeight / 2,
-          })
-        : { x: 200, y: 200 };
-
       const id = nextId("node");
       const newNode: Node = {
         id,
         type: "flowNode",
-        position: { x: center.x + offset - 80, y: center.y + offset - 30 },
+        position: nextSpawnPosition(),
         data: {
           label: meta?.defaultLabel ?? "Node",
           kind,
@@ -216,7 +222,27 @@ function FlowCanvasInner() {
       };
       setNodes((nds) => [...nds, newNode]);
     },
-    [pushHistory, setNodes, screenToFlowPosition, updateNodeLabel],
+    [pushHistory, setNodes, nextSpawnPosition, updateNodeLabel],
+  );
+
+  const addIconNode = useCallback(
+    (iconName: string) => {
+      pushHistory();
+      const id = nextId("node");
+      const newNode: Node = {
+        id,
+        type: "flowNode",
+        position: nextSpawnPosition(),
+        data: {
+          label: iconLabel(iconName),
+          kind: "icon",
+          iconName,
+          updateLabel: (label: string) => updateNodeLabel(id, label),
+        } satisfies FlowNodeData,
+      };
+      setNodes((nds) => [...nds, newNode]);
+    },
+    [pushHistory, setNodes, nextSpawnPosition, updateNodeLabel],
   );
 
   const deleteSelected = useCallback(() => {
@@ -369,6 +395,7 @@ function FlowCanvasInner() {
     <div className="flow-canvas-wrapper flex h-full flex-col overflow-hidden rounded-md border border-border">
       <FlowToolbar
         onAddNode={addNode}
+        onAddIcon={addIconNode}
         onTidyUp={handleTidyUp}
         onUndo={handleUndo}
         onRedo={handleRedo}

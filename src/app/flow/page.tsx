@@ -6,7 +6,7 @@ import { RelatedTools } from "@/components/lab/related-tools";
 export const metadata: Metadata = {
   title: "Flow Builder",
   description:
-    "A visual canvas for mapping system flows, pipelines, and decision trees — drag, connect, auto-layout, and export, entirely in the browser.",
+    "A general-purpose visual design canvas — flowcharts, architecture diagrams, wireframes, and system sketches, with shapes, icons, and text, entirely in the browser.",
 };
 
 export default function FlowPage() {
@@ -14,8 +14,8 @@ export default function FlowPage() {
     <>
       <PageHeader
         eyebrow="Flow Builder"
-        title="Map a flow, not just a list of steps."
-        description="Architecture diagrams, API sequences, CI/CD pipelines, decision trees, state machines — sketch it visually, connect the pieces, and export it. Everything saves to your browser automatically; nothing is sent anywhere."
+        title="A canvas for any kind of diagram, not just flowcharts."
+        description="Flowchart nodes, generic shapes, free text, and a real icon library — architecture diagrams, API sequences, CI/CD pipelines, decision trees, UI wireframes, system sketches. Sketch it visually, connect the pieces, and export it. Everything saves to your browser automatically; nothing is sent anywhere."
       />
 
       <section className="mx-auto max-w-7xl px-6 py-12">
