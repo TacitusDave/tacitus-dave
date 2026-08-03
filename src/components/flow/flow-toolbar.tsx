@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { fieldStyles } from "@/components/lab/field-styles";
 import { nodeKindGroups, type FlowNodeKind } from "@/lib/flow/types";
-import { iconRegistry, iconNames, iconLabel } from "@/lib/flow/icons";
+import { iconRegistry, iconCategories, iconLabel } from "@/lib/flow/icons";
 
 interface FlowToolbarProps {
   onAddNode: (kind: FlowNodeKind) => void;
@@ -19,8 +20,45 @@ interface FlowToolbarProps {
   onClear: () => void;
 }
 
+function IconGrid({ names, onPick }: { names: string[]; onPick: (iconName: string) => void }) {
+  return (
+    <div className="grid grid-cols-8 gap-1">
+      {names.map((name) => {
+        const Icon = iconRegistry[name];
+        return (
+          <button
+            key={name}
+            type="button"
+            title={iconLabel(name)}
+            onClick={() => onPick(name)}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-foreground-muted transition-colors hover:bg-background hover:text-accent"
+          >
+            <Icon size={16} strokeWidth={1.75} />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function IconPicker({ onPick }: { onPick: (iconName: string) => void }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  const filteredCategories = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const entries = Object.entries(iconCategories) as [string, string[]][];
+    if (!q) return entries;
+    return entries
+      .map(([category, names]) => [category, names.filter((name) => name.includes(q))] as const)
+      .filter(([, names]) => names.length > 0);
+  }, [query]);
+
+  function pick(name: string) {
+    onPick(name);
+    setOpen(false);
+    setQuery("");
+  }
 
   return (
     <div className="relative">
@@ -39,24 +77,31 @@ function IconPicker({ onPick }: { onPick: (iconName: string) => void }) {
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-40 cursor-default"
           />
-          <div className="absolute left-0 top-full z-50 mt-2 grid w-64 grid-cols-6 gap-1 rounded-md border border-border bg-background-elevated p-2 shadow-lg">
-            {iconNames.map((name) => {
-              const Icon = iconRegistry[name];
-              return (
-                <button
-                  key={name}
-                  type="button"
-                  title={iconLabel(name)}
-                  onClick={() => {
-                    onPick(name);
-                    setOpen(false);
-                  }}
-                  className="flex h-9 w-9 items-center justify-center rounded-md text-foreground-muted transition-colors hover:bg-background hover:text-accent"
-                >
-                  <Icon size={18} strokeWidth={1.75} />
-                </button>
-              );
-            })}
+          <div className="absolute left-0 top-full z-50 mt-2 flex max-h-[26rem] w-[24rem] flex-col rounded-md border border-border bg-background-elevated shadow-lg">
+            <div className="border-b border-border p-2">
+              <input
+                autoFocus
+                type="text"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search 310 icons…"
+                className={`${fieldStyles} text-sm`}
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto p-2">
+              {filteredCategories.length === 0 ? (
+                <p className="px-2 py-4 text-center text-xs text-foreground-muted">No icons match.</p>
+              ) : (
+                filteredCategories.map(([category, names]) => (
+                  <div key={category} className="mb-3">
+                    <p className="mb-1.5 font-mono text-[10px] uppercase tracking-widest text-foreground-muted">
+                      {category}
+                    </p>
+                    <IconGrid names={names} onPick={pick} />
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </>
       ) : null}
