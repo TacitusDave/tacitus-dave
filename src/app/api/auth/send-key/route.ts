@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSubscriber, isActiveSubscriber } from "@/lib/subscribers";
-import { createAuthCode } from "@/lib/auth-code";
-import { sendAccessCodeEmail } from "@/lib/email";
+import { sendAccessKeyEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -18,14 +17,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const subscriber = await getSubscriber(email);
-    if (isActiveSubscriber(subscriber)) {
-      const code = await createAuthCode(email);
-      await sendAccessCodeEmail(email, code);
+    if (isActiveSubscriber(subscriber) && subscriber?.accessKey) {
+      await sendAccessKeyEmail(email, subscriber.accessKey);
     }
     // Same response either way — don't reveal whether an email is a subscriber.
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error("request-code failed:", error);
+    console.error("send-key failed:", error);
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }

@@ -48,7 +48,7 @@ async function handleLab(request: NextRequest, pathname: string) {
   }
 
   if (!email) {
-    return redirectToPricing(request, pathname);
+    return redirectToAuthorize(request, pathname);
   }
 
   // The owner's bypass session isn't tied to a subscriber record, so it has
@@ -57,7 +57,7 @@ async function handleLab(request: NextRequest, pathname: string) {
     try {
       const subscriber = await getSubscriber(email);
       if (!isActiveSubscriber(subscriber)) {
-        return redirectToPricing(request, pathname);
+        return redirectToAuthorize(request, pathname);
       }
     } catch (error) {
       // Redis unreachable — fail open. The signed session is still evidence
@@ -70,9 +70,13 @@ async function handleLab(request: NextRequest, pathname: string) {
   return NextResponse.next();
 }
 
-function redirectToPricing(request: NextRequest, pathname: string) {
+// Sends people straight to "enter your key" rather than back through
+// checkout/pricing — they already have a key from subscribing, this isn't a
+// fresh signup each time their (deliberately short-lived) session ends.
+function redirectToAuthorize(request: NextRequest, pathname: string) {
   const url = request.nextUrl.clone();
-  url.pathname = "/pricing";
+  url.pathname = "/lab/authorize";
+  url.search = "";
   url.searchParams.set("from", pathname);
   return NextResponse.redirect(url);
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuthCode } from "@/lib/auth-code";
-import { sendAccessCodeEmail } from "@/lib/email";
+import { getSubscriber } from "@/lib/subscribers";
+import { sendAccessKeyEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
@@ -11,11 +11,16 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const code = await createAuthCode(email);
-    await sendAccessCodeEmail(email, code);
+    const subscriber = await getSubscriber(email);
+    if (!subscriber?.accessKey) {
+      return NextResponse.json({ error: "No access key on file for that email." }, { status: 404 });
+    }
+
+    // Resends the same persistent key — it never regenerates on its own.
+    await sendAccessKeyEmail(email, subscriber.accessKey);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error("Failed to resend code:", error);
-    return NextResponse.json({ error: "Failed to resend code." }, { status: 500 });
+    console.error("Failed to resend access key:", error);
+    return NextResponse.json({ error: "Failed to resend access key." }, { status: 500 });
   }
 }

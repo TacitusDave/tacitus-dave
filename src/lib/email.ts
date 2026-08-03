@@ -8,13 +8,13 @@ function getResend(): Resend {
   return new Resend(apiKey);
 }
 
-export async function sendAccessCodeEmail(email: string, code: string): Promise<void> {
+export async function sendAccessKeyEmail(email: string, accessKey: string): Promise<void> {
   const resend = getResend();
 
   await resend.emails.send({
     from: FROM_ADDRESS,
     to: email,
-    subject: `Your Lab access code: ${code}`,
+    subject: "Your Lab access key",
     html: `
       <div style="background:#0a0b0d;padding:40px 24px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">
         <div style="max-width:480px;margin:0 auto;background:#121317;border:1px solid #22252b;border-radius:8px;padding:32px;">
@@ -22,13 +22,19 @@ export async function sendAccessCodeEmail(email: string, code: string): Promise<
             Tacitus Dave OS &middot; Lab Access
           </p>
           <p style="color:#e8eaed;font-size:16px;margin:0 0 24px;">
-            Use this code to sign in to the Lab. It expires in 15 minutes and can only be used once.
+            This is your personal access key — it signs you into the Lab for as long as your
+            subscription is active. You'll be asked to enter it every time you open the site in a
+            new browser session, so keep it somewhere safe rather than deleting this email.
           </p>
-          <p style="color:#2dd4bf;font-size:32px;font-weight:600;letter-spacing:4px;margin:0 0 24px;">
-            ${code}
+          <p style="color:#2dd4bf;font-size:22px;font-weight:600;letter-spacing:2px;margin:0 0 24px;word-break:break-all;">
+            ${accessKey}
+          </p>
+          <p style="color:#9aa0a6;font-size:12px;margin:0 0 8px;">
+            Treat this key like a password — anyone who has it can sign in as you. Don't share it,
+            and don't forward this email.
           </p>
           <p style="color:#9aa0a6;font-size:12px;margin:0;">
-            If you didn't request this, you can ignore this email.
+            If you didn't subscribe to the Lab, you can ignore this email.
           </p>
         </div>
       </div>

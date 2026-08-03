@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyPaystackSignature, type PaystackWebhookEvent } from "@/lib/paystack";
-import { setSubscriber, revokeAccess, type SubscriberRecord } from "@/lib/subscribers";
+import { getSubscriber, setSubscriber, revokeAccess, type SubscriberRecord } from "@/lib/subscribers";
+import { generateAccessKey } from "@/lib/access-key";
+import { sendAccessKeyEmail } from "@/lib/email";
 
 const ANNUAL_PLAN_CODE = process.env.PAYSTACK_PLAN_CODE_ANNUAL;
 
@@ -73,6 +75,12 @@ async function grantFromEvent(event: PaystackWebhookEvent): Promise<void> {
       ? Math.floor(new Date(nextPaymentDate).getTime() / 1000)
       : Math.floor(Date.now() / 1000) + (plan === "annual" ? 365 : 31) * 24 * 60 * 60;
 
+  // Reuse the existing key across renewals/re-subscribes so it never
+  // silently changes under a subscriber who already has it saved.
+  const existing = await getSubscriber(email);
+  const isNewKey = !existing?.accessKey;
+  const accessKey = existing?.accessKey ?? generateAccessKey();
+
   await setSubscriber({
     email,
     paystackCustomerCode: String(event.data.customer_code ?? email),
@@ -80,7 +88,14 @@ async function grantFromEvent(event: PaystackWebhookEvent): Promise<void> {
     status: "active",
     plan,
     currentPeriodEnd,
+    accessKey,
   });
+
+  if (isNewKey) {
+    await sendAccessKeyEmail(email, accessKey).catch((error) =>
+      console.error("Failed to send access key email:", error),
+    );
+  }
 }
 
 async function revokeFromEvent(event: PaystackWebhookEvent): Promise<void> {

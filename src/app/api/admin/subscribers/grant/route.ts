@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { grantManualAccess } from "@/lib/subscribers";
+import { getSubscriber, grantManualAccess } from "@/lib/subscribers";
+import { sendAccessKeyEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
@@ -10,7 +11,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const existing = await getSubscriber(email);
+    const isNewKey = !existing?.accessKey;
+
     const record = await grantManualAccess(email, typeof days === "number" && days > 0 ? days : 30);
+
+    if (isNewKey) {
+      await sendAccessKeyEmail(email, record.accessKey).catch((error) =>
+        console.error("Failed to send access key email:", error),
+      );
+    }
+
     return NextResponse.json({ subscriber: record });
   } catch (error) {
     console.error("Failed to grant access:", error);

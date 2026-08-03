@@ -19,6 +19,18 @@ function formatDate(unixSeconds: number): string {
   });
 }
 
+function formatCountdown(currentPeriodEnd: number): string {
+  const diffMs = currentPeriodEnd * 1000 - Date.now();
+  if (diffMs <= 0) return "Expired";
+
+  const days = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((diffMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  if (days > 0) return `${days}d ${hours}h left`;
+
+  const minutes = Math.floor((diffMs % (60 * 60 * 1000)) / (60 * 1000));
+  return `${hours}h ${minutes}m left`;
+}
+
 function statusColor(status: string, currentPeriodEnd: number): string {
   const active = (status === "active" || status === "manual") && currentPeriodEnd * 1000 > Date.now();
   if (active) return "#0ca30c";
@@ -120,7 +132,7 @@ export function SubscriberManager() {
 
   async function handleResendCode(email: string) {
     const ok = await callAction("/api/admin/subscribers/resend-code", { email }, email);
-    if (ok) setNotice(`Sent a fresh access code to ${email}.`);
+    if (ok) setNotice(`Resent ${email}'s access key.`);
   }
 
   return (
@@ -190,7 +202,12 @@ export function SubscriberManager() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-foreground-muted">{subscriber.plan}</td>
-                  <td className="px-4 py-3 text-foreground-muted">{formatDate(subscriber.currentPeriodEnd)}</td>
+                  <td className="px-4 py-3 text-foreground-muted">
+                    {formatDate(subscriber.currentPeriodEnd)}
+                    <span className="mt-0.5 block font-mono text-[11px] text-accent">
+                      {formatCountdown(subscriber.currentPeriodEnd)}
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
                       <Button
@@ -209,7 +226,7 @@ export function SubscriberManager() {
                         disabled={busyEmail === subscriber.email}
                         onClick={() => handleResendCode(subscriber.email)}
                       >
-                        Resend code
+                        Resend key
                       </Button>
                       <Button
                         type="button"

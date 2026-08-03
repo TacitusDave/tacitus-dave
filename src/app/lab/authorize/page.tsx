@@ -14,7 +14,7 @@ export default function AuthorizePage() {
       <PageHeader
         eyebrow="Lab Authorization Center"
         title="Sign in to the Lab."
-        description="Enter the email you subscribed with. We'll send a one-time code — it's valid for 15 minutes and works once."
+        description="Enter your access key — the one we emailed you when you subscribed. It stays valid for as long as your subscription is active."
       />
 
       <section className="mx-auto max-w-md px-6 py-12">
