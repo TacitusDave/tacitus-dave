@@ -23,11 +23,12 @@ export default function AboutPage() {
             <div className="overflow-hidden rounded-md border border-border">
               <Image
                 src={profileImage}
-                alt={`Portrait of ${siteConfig.name}`}
+                alt={`Portrait of ${siteConfig.name} — hover or focus to bring it into focus`}
                 priority
                 placeholder="blur"
                 sizes="(min-width: 1024px) 224px, 192px"
-                className="h-auto w-full object-cover"
+                tabIndex={0}
+                className="profile-photo h-auto w-full object-cover outline-none"
               />
             </div>
           </div>

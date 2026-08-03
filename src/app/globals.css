@@ -121,6 +121,31 @@ body {
   }
 }
 
+/* Profile photo: a slow, "alive" blur by default — sharpens on hover/focus
+   so it reads as a deliberate reveal rather than a static censor. */
+@keyframes profile-blur-breathe {
+  0%,
+  100% {
+    filter: blur(7px);
+  }
+  50% {
+    filter: blur(13px);
+  }
+}
+
+.profile-photo {
+  filter: blur(7px);
+  animation: profile-blur-breathe 6s ease-in-out infinite;
+  transition: filter 0.5s ease;
+  transform: scale(1.06);
+}
+
+.profile-photo:hover,
+.profile-photo:focus-visible {
+  filter: blur(0);
+  animation-play-state: paused;
+}
+
 /* Dialog open/close transition, using @starting-style so it degrades
    gracefully (an instant show/hide) in browsers that don't support it. */
 dialog {
