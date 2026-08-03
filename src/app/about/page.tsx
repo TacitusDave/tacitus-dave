@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import profileImage from "../../../public/profile.jpg";
 import { brandTraits, brandPromise, focusAreas } from "@/lib/content";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { siteConfig } from "@/lib/site-config";
+import { ProfilePhoto } from "@/components/about/profile-photo";
 
 export const metadata: Metadata = {
   title: "About",
@@ -19,19 +17,7 @@ export default function AboutPage() {
     <>
       <section className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-16">
-          <div className="mx-auto w-48 shrink-0 sm:w-56 lg:mx-0">
-            <div className="overflow-hidden rounded-md border border-border">
-              <Image
-                src={profileImage}
-                alt={`Portrait of ${siteConfig.name} — hover or focus to bring it into focus`}
-                priority
-                placeholder="blur"
-                sizes="(min-width: 1024px) 224px, 192px"
-                tabIndex={0}
-                className="profile-photo h-auto w-full object-cover outline-none"
-              />
-            </div>
-          </div>
+          <ProfilePhoto />
 
           <div className="flex-1">
             <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-accent">

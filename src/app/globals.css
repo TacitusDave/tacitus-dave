@@ -121,29 +121,95 @@ body {
   }
 }
 
-/* Profile photo: a slow, "alive" blur by default — sharpens on hover/focus
-   so it reads as a deliberate reveal rather than a static censor. */
-@keyframes profile-blur-breathe {
+/* Profile photo: fully obscured by default behind a heavy blur and a dark,
+   slowly sweeping gradient — meant to read like an AI image mid-generation,
+   not a gentle privacy blur. Reveals on hover (desktop) or tap (touch, via
+   the [data-revealed] attribute toggled in ProfilePhoto's click handler). */
+.profile-frame {
+  position: relative;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  animation: profile-frame-glow 4.5s ease-in-out infinite;
+}
+
+.profile-frame[data-revealed="true"] {
+  animation-play-state: paused;
+  box-shadow: none;
+}
+
+@keyframes profile-frame-glow {
   0%,
   100% {
-    filter: blur(7px);
+    box-shadow:
+      0 0 0 1px rgba(var(--accent-rgb), 0.18),
+      0 0 22px 3px rgba(var(--accent-rgb), 0.1);
   }
   50% {
-    filter: blur(13px);
+    box-shadow:
+      0 0 0 1px rgba(var(--accent-rgb), 0.5),
+      0 0 32px 8px rgba(var(--accent-rgb), 0.28);
   }
 }
 
 .profile-photo {
-  filter: blur(7px);
-  animation: profile-blur-breathe 6s ease-in-out infinite;
-  transition: filter 0.5s ease;
-  transform: scale(1.06);
+  filter: blur(26px) saturate(0.7) brightness(0.8);
+  transform: scale(1.18);
+  transition:
+    filter 0.6s ease,
+    transform 0.6s ease;
 }
 
-.profile-photo:hover,
-.profile-photo:focus-visible {
-  filter: blur(0);
-  animation-play-state: paused;
+.profile-frame:hover .profile-photo,
+.profile-frame[data-revealed="true"] .profile-photo {
+  filter: blur(0) saturate(1) brightness(1);
+  transform: scale(1.02);
+}
+
+.profile-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    125deg,
+    rgba(10, 11, 13, 0.82) 0%,
+    rgba(10, 11, 13, 0.4) 30%,
+    rgba(var(--accent-rgb), 0.22) 48%,
+    rgba(10, 11, 13, 0.4) 66%,
+    rgba(10, 11, 13, 0.82) 100%
+  );
+  background-size: 260% 260%;
+  animation: profile-overlay-sweep 5.5s ease-in-out infinite;
+  transition: opacity 0.5s ease;
+}
+
+:root[data-theme="light"] .profile-overlay {
+  background: linear-gradient(
+    125deg,
+    rgba(17, 19, 24, 0.72) 0%,
+    rgba(17, 19, 24, 0.28) 30%,
+    rgba(var(--accent-rgb), 0.22) 48%,
+    rgba(17, 19, 24, 0.28) 66%,
+    rgba(17, 19, 24, 0.72) 100%
+  );
+  background-size: 260% 260%;
+}
+
+@keyframes profile-overlay-sweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.profile-frame:hover .profile-overlay,
+.profile-frame[data-revealed="true"] .profile-overlay {
+  opacity: 0;
 }
 
 /* Dialog open/close transition, using @starting-style so it degrades
