@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { cn } from "@/lib/cn";
-import { archEdges, nodesByRow, type ArchNode } from "@/lib/architecture";
+import { archEdges, nodesByRow, scaleLevels, type ArchNode, type ScaleLevel } from "@/lib/architecture";
 
 interface Line {
   id: string;
@@ -21,6 +22,7 @@ export function ArchitectureExplorer() {
   const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const [lines, setLines] = useState<Line[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [scale, setScale] = useState<ScaleLevel>("baseline");
 
   function registerNode(id: string, el: HTMLButtonElement | null) {
     if (el) nodeRefs.current.set(id, el);
@@ -80,6 +82,30 @@ export function ArchitectureExplorer() {
 
   return (
     <div className="rounded-md border border-border bg-background-elevated/40 p-6 sm:p-10">
+      <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
+        {scaleLevels.map(({ level, label }) => (
+          <button
+            key={level}
+            type="button"
+            onClick={() => setScale(level)}
+            className={cn(
+              "rounded-full border px-3 py-1.5 font-mono text-xs uppercase tracking-widest transition-colors",
+              scale === level
+                ? "border-accent text-accent"
+                : "border-border text-foreground-muted hover:border-accent hover:text-accent",
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {scale !== "baseline" ? (
+        <p className="mb-6 text-center text-sm text-foreground-muted">
+          Nodes marked <span className="text-accent">●</span> need something to change at this
+          scale — click one to see what and why.
+        </p>
+      ) : null}
+
       <div ref={containerRef} className="relative flex flex-col items-center gap-10">
         <svg className="pointer-events-none absolute inset-0 h-full w-full overflow-visible">
           {lines.map((line) => {
@@ -108,6 +134,7 @@ export function ArchitectureExplorer() {
               <ArchNodeButton
                 key={node.id}
                 node={node}
+                scale={scale}
                 registerNode={registerNode}
                 onActivate={() => setActiveId(node.id)}
                 onDeactivate={() => setActiveId(null)}
@@ -116,21 +143,34 @@ export function ArchitectureExplorer() {
           </div>
         ))}
       </div>
+
+      <div className="mt-10 flex justify-center border-t border-border pt-6">
+        <Link
+          href="/flow"
+          className="font-mono text-xs uppercase tracking-widest text-foreground-muted transition-colors hover:text-accent"
+        >
+          Want to sketch your own system? Try the Flow Builder →
+        </Link>
+      </div>
     </div>
   );
 }
 
 function ArchNodeButton({
   node,
+  scale,
   registerNode,
   onActivate,
   onDeactivate,
 }: {
   node: ArchNode;
+  scale: ScaleLevel;
   registerNode: (id: string, el: HTMLButtonElement | null) => void;
   onActivate: () => void;
   onDeactivate: () => void;
 }) {
+  const scaleNote = scale === "baseline" ? null : node.scaleNotes?.[scale];
+
   return (
     <Dialog
       title={node.label}
@@ -145,20 +185,36 @@ function ArchNodeButton({
           onFocus={onActivate}
           onBlur={onDeactivate}
           className={cn(
-            "flex w-44 flex-col items-center gap-1 rounded-md border border-border bg-background px-4 py-3 text-center outline-none transition-colors duration-200 hover:border-accent focus-visible:border-accent",
+            "relative flex w-44 flex-col items-center gap-1 rounded-md border border-border bg-background px-4 py-3 text-center outline-none transition-colors duration-200 hover:border-accent focus-visible:border-accent",
             node.id === "observability" && "border-dashed",
           )}
         >
+          {scaleNote ? (
+            <span
+              aria-hidden="true"
+              className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-accent"
+            />
+          ) : null}
           <span className="text-sm font-medium text-foreground">{node.label}</span>
           <span className="text-xs text-foreground-muted">{node.tagline}</span>
         </button>
       )}
     >
-      <div className="flex flex-col gap-3">
-        <p className="font-mono text-xs uppercase tracking-widest text-accent">
-          {node.decisionTitle}
-        </p>
-        <p className="text-sm text-foreground-muted">{node.decisionBody}</p>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
+          <p className="font-mono text-xs uppercase tracking-widest text-accent">
+            {node.decisionTitle}
+          </p>
+          <p className="text-sm text-foreground-muted">{node.decisionBody}</p>
+        </div>
+        {scaleNote ? (
+          <div className="flex flex-col gap-2 border-t border-border pt-4">
+            <p className="font-mono text-xs uppercase tracking-widest text-accent">
+              At {scaleLevels.find((s) => s.level === scale)?.label}
+            </p>
+            <p className="text-sm text-foreground-muted">{scaleNote}</p>
+          </div>
+        ) : null}
       </div>
     </Dialog>
   );

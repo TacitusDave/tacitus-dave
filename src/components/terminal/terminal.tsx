@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme/theme-provider";
 import { siteConfig } from "@/lib/site-config";
 import { formatPath, getNode, resolvePath } from "@/lib/terminal-fs";
+import { encodeBase64, decodeBase64 } from "@/lib/lab/base64";
+import { encodeUrlComponent, decodeUrlComponent } from "@/lib/lab/url-encoding";
+import { computeHash, type HashAlgorithm } from "@/lib/lab/hash";
+import { runJs } from "@/lib/terminal-run-js";
 
 interface OutputLine {
   id: number;
@@ -30,6 +34,12 @@ const COMMANDS = [
   "resume",
   "projects",
   "skills",
+  "run",
+  "base64",
+  "urlencode",
+  "hash",
+  "uuid",
+  "json",
   "exit",
 ];
 
@@ -42,6 +52,9 @@ const ROUTE_MAP: Record<string, string> = {
   terminal: "/terminal",
   browser: "/browser",
   contact: "/contact",
+  pricing: "/pricing",
+  lab: "/lab",
+  flow: "/flow",
 };
 
 const HELP_TEXT = [
@@ -52,7 +65,7 @@ const HELP_TEXT = [
   "  cd <path>         change directory",
   "  pwd               print working directory",
   "  cat <file>        print a file's contents",
-  "  open <page>       navigate the real site (about, projects, security, architecture, browser, contact, home)",
+  "  open <page>       navigate the real site (about, projects, security, architecture, browser, flow, lab, pricing, contact, home)",
   "  theme [dark|light] view or set the color theme",
   "  contact           show contact details",
   "  resume            shortcut for `cat resume.txt`",
@@ -61,6 +74,15 @@ const HELP_TEXT = [
   "  history           show command history",
   "  clear             clear the screen",
   "  echo <text>       print text back",
+  "",
+  "  This part actually runs, not just simulated output:",
+  "  run <js code>            execute real JavaScript in your browser and print the result",
+  "  base64 encode|decode <t> Base64 in and out",
+  "  urlencode encode|decode <t>  percent-encode in and out",
+  "  hash <algo> <text>       sha1 | sha256 | sha384 | sha512, via Web Crypto",
+  "  uuid                     a real RFC 4122 v4 UUID",
+  "  json <text>              parse and pretty-print JSON",
+  "  These are preview slices of the full Lab tools — see `open pricing` for the rest.",
 ];
 
 function promptLabel(cwd: string[]) {
@@ -242,6 +264,81 @@ export function Terminal() {
       case "skills":
         runCat("skills.txt");
         break;
+      case "run": {
+        const code = trimmed.slice(cmd.length).trim();
+        if (!code) {
+          appendLine("error", "usage: run <javascript>");
+          break;
+        }
+        const { logs, result, hasResult, error } = runJs(code);
+        logs.forEach((line) => appendLine("output", line));
+        if (error) {
+          appendLine("error", error);
+        } else if (hasResult) {
+          appendLine("output", `=> ${result === undefined ? "undefined" : JSON.stringify(result, null, 2) ?? String(result)}`);
+        }
+        break;
+      }
+      case "base64": {
+        const [sub, ...rest] = args;
+        const value = rest.join(" ");
+        if ((sub !== "encode" && sub !== "decode") || !value) {
+          appendLine("error", "usage: base64 encode|decode <text>");
+          break;
+        }
+        try {
+          appendLine("output", sub === "encode" ? encodeBase64(value) : decodeBase64(value));
+        } catch (err) {
+          appendLine("error", err instanceof Error ? err.message : "Couldn't process that input.");
+        }
+        break;
+      }
+      case "urlencode": {
+        const [sub, ...rest] = args;
+        const value = rest.join(" ");
+        if ((sub !== "encode" && sub !== "decode") || !value) {
+          appendLine("error", "usage: urlencode encode|decode <text>");
+          break;
+        }
+        try {
+          appendLine("output", sub === "encode" ? encodeUrlComponent(value) : decodeUrlComponent(value));
+        } catch (err) {
+          appendLine("error", err instanceof Error ? err.message : "Couldn't process that input.");
+        }
+        break;
+      }
+      case "hash": {
+        const algoMap: Record<string, HashAlgorithm> = {
+          sha1: "SHA-1",
+          sha256: "SHA-256",
+          sha384: "SHA-384",
+          sha512: "SHA-512",
+        };
+        const algorithm = algoMap[args[0]?.toLowerCase() ?? ""];
+        const value = args.slice(1).join(" ");
+        if (!algorithm || !value) {
+          appendLine("error", "usage: hash <sha1|sha256|sha384|sha512> <text>");
+          break;
+        }
+        computeHash(algorithm, value).then((digest) => appendLine("output", digest));
+        break;
+      }
+      case "uuid":
+        appendLine("output", crypto.randomUUID());
+        break;
+      case "json": {
+        const value = args.join(" ");
+        if (!value) {
+          appendLine("error", "usage: json <text>");
+          break;
+        }
+        try {
+          appendLines("output", JSON.stringify(JSON.parse(value), null, 2).split("\n"));
+        } catch (err) {
+          appendLine("error", err instanceof Error ? err.message : "Invalid JSON.");
+        }
+        break;
+      }
       case "exit":
       case "logout":
         appendLine("output", "There's no escape hatch here — try `open home`.");

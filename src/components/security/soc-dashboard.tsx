@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { SeverityMeter } from "./severity-meter";
 import { MitreMatrix, type TacticState } from "./mitre-matrix";
 import { EventRow } from "./event-row";
+import { HeaderCheck } from "./header-check";
 import {
   mitreTactics,
   pickEventTemplate,
@@ -100,6 +101,8 @@ export function SocDashboard() {
           </Button>
         </div>
       </div>
+
+      <HeaderCheck />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {severityOrder.map((severity) => (
