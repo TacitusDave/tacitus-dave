@@ -3,6 +3,9 @@ import { verifyPaystackSignature, type PaystackWebhookEvent } from "@/lib/paysta
 import { getSubscriber, setSubscriber, revokeAccess, type SubscriberRecord } from "@/lib/subscribers";
 import { generateAccessKey } from "@/lib/access-key";
 import { sendAccessKeyEmail } from "@/lib/email";
+import { findOrCreateOrganization, getOrganizationByCustomerCode, setOrganizationStatus } from "@/lib/organizations";
+import { createMembershipWithKey } from "@/lib/memberships";
+import { appendInvoice } from "@/lib/invoices";
 
 const ANNUAL_PLAN_CODE = process.env.PAYSTACK_PLAN_CODE_ANNUAL;
 
@@ -60,6 +63,12 @@ function planFromCode(planCode: string | null): SubscriberRecord["plan"] {
   return planCode && planCode === ANNUAL_PLAN_CODE ? "annual" : "monthly";
 }
 
+/** Paystack sends amounts in kobo (1 naira = 100 kobo) — see the same conversion note in src/lib/paystack.ts. */
+function extractAmountNgn(event: PaystackWebhookEvent): number | null {
+  const amount = event.data.amount;
+  return typeof amount === "number" ? amount / 100 : null;
+}
+
 async function grantFromEvent(event: PaystackWebhookEvent): Promise<void> {
   const email = extractEmail(event);
   if (!email) {
@@ -80,15 +89,37 @@ async function grantFromEvent(event: PaystackWebhookEvent): Promise<void> {
   const existing = await getSubscriber(email);
   const isNewKey = !existing?.accessKey;
   const accessKey = existing?.accessKey ?? generateAccessKey();
+  const paystackCustomerCode = String(event.data.customer_code ?? email);
+  const paystackSubscriptionCode = String(event.data.subscription_code ?? "unknown");
 
   await setSubscriber({
     email,
-    paystackCustomerCode: String(event.data.customer_code ?? email),
-    paystackSubscriptionCode: String(event.data.subscription_code ?? "unknown"),
+    paystackCustomerCode,
+    paystackSubscriptionCode,
     status: "active",
     plan,
     currentPeriodEnd,
     accessKey,
+  });
+
+  // Dual-write into the org/membership model (Phase 2 of the team-accounts
+  // rollout) — the legacy subscriber record above stays the live read path
+  // until Phase 3 cuts proxy.ts over. Reuses the same accessKey computed
+  // above so a subscriber's key is identical whichever path is read.
+  const org = await findOrCreateOrganization({
+    paystackCustomerCode,
+    paystackSubscriptionCode,
+    ownerEmail: email,
+    plan,
+    status: "active",
+    currentPeriodEnd,
+  });
+  await createMembershipWithKey({ orgId: org.id, email, role: "owner", accessKey });
+  await appendInvoice({
+    orgId: org.id,
+    amountNgn: extractAmountNgn(event),
+    plan,
+    paidAt: Math.floor(Date.now() / 1000),
   });
 
   if (isNewKey) {
@@ -105,4 +136,14 @@ async function revokeFromEvent(event: PaystackWebhookEvent): Promise<void> {
     return;
   }
   await revokeAccess(email);
+
+  // Org-side: flip status rather than delete (see the Phase 2 plan's
+  // "cancellation flips status, doesn't delete" rule) — membership records
+  // and access keys stay intact but inert, so reactivation is a pure status
+  // flip instead of re-provisioning every team member from scratch.
+  const customerCode = String(event.data.customer_code ?? email);
+  const org = await getOrganizationByCustomerCode(customerCode);
+  if (org) {
+    await setOrganizationStatus(org.id, "cancelled");
+  }
 }
