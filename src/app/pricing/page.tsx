@@ -34,7 +34,7 @@ export default function PricingPage() {
                 <Card
                   className={cn(
                     "relative flex h-full flex-col gap-6",
-                    inverted && "border-transparent bg-[#21232a] text-[#f3f1ea]",
+                    inverted && "border-transparent bg-[#09122a] text-white",
                   )}
                 >
                   {plan.highlight ? (
@@ -42,7 +42,7 @@ export default function PricingPage() {
                       className={cn(
                         "absolute -top-3 right-6 rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-widest",
                         inverted
-                          ? "border-white/20 bg-[#f3f1ea] text-[#21232a]"
+                          ? "border-white/20 bg-white text-[#09122a]"
                           : "border-accent bg-background text-accent",
                       )}
                     >
@@ -80,7 +80,7 @@ export default function PricingPage() {
                           aria-hidden="true"
                           className={cn(
                             "flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px]",
-                            inverted ? "bg-accent text-[#06110f]" : "bg-accent/15 text-accent",
+                            inverted ? "bg-accent text-white" : "bg-accent/15 text-accent",
                           )}
                         >
                           ✓
@@ -117,7 +117,7 @@ export default function PricingPage() {
               <Link
                 key={tool.slug}
                 href={tool.href}
-                className="block rounded-2xl border border-border bg-background-elevated/60 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lg"
+                className="block rounded-xl border border-border bg-background-elevated/60 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lg"
               >
                 <p className="text-sm font-medium text-foreground">{tool.title}</p>
                 <p className="mt-2 text-xs text-foreground-muted">{tool.tagline}</p>

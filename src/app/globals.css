@@ -3,34 +3,19 @@
 :root {
   color-scheme: light;
 
-  /* Warm cream/stone, matched to the brand mark's own background. */
-  --background: #f3f1ea;
-  --background-elevated: #fffdf8;
-  --foreground: #21232a;
-  --foreground-muted: #6b6e73;
-  --border: #e4e0d4;
-  --accent: #0c7568;
-  --accent-foreground: #f0fdfa;
+  /* Provet's exact token values (extracted from their compiled CSS) —
+     white base, navy-900 text, blue-600 accent. */
+  --background: #ffffff;
+  --background-elevated: #f3f3f4;
+  --foreground: #09122a;
+  --foreground-muted: #848894;
+  --border: #e6e7ea;
+  --accent: #3559c7;
+  --accent-foreground: #ffffff;
 
-  --accent-rgb: 12, 117, 104;
-  --grid-line: rgba(33, 35, 42, 0.05);
-  --glow-opacity: 0.12;
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-
-  --background: #0a0b0d;
-  --background-elevated: #121317;
-  --foreground: #e8eaed;
-  --foreground-muted: #9aa0a6;
-  --border: #22252b;
-  --accent: #2dd4bf;
-  --accent-foreground: #06110f;
-
-  --accent-rgb: 45, 212, 191;
-  --grid-line: rgba(232, 234, 237, 0.06);
-  --glow-opacity: 0.22;
+  --accent-rgb: 53, 89, 199;
+  --grid-line: rgba(9, 18, 42, 0.04);
+  --glow-opacity: 0.08;
 }
 
 @theme inline {
@@ -113,6 +98,24 @@ body {
   animation: backdrop-flow 22s ease-in-out infinite alternate;
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes feature-showcase-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 @keyframes backdrop-flow {
   0% {
     transform: translate3d(-3%, -2%, 0) scale(1);
@@ -184,18 +187,6 @@ body {
   transition: opacity 0.5s ease;
 }
 
-:root[data-theme="light"] .profile-overlay {
-  background: linear-gradient(
-    125deg,
-    rgba(17, 19, 24, 0.72) 0%,
-    rgba(17, 19, 24, 0.28) 30%,
-    rgba(var(--accent-rgb), 0.22) 48%,
-    rgba(17, 19, 24, 0.28) 66%,
-    rgba(17, 19, 24, 0.72) 100%
-  );
-  background-size: 260% 260%;
-}
-
 @keyframes profile-overlay-sweep {
   0% {
     background-position: 0% 50%;
@@ -252,6 +243,25 @@ dialog[open]::backdrop {
 @starting-style {
   dialog[open]::backdrop {
     opacity: 0;
+  }
+}
+
+/* "Reading" text: each word starts dim and brightens to full color as it
+   scrolls through the lower half of the viewport — native scroll-driven
+   animation (view()), no scroll listener needed. Falls back to plain,
+   fully-legible text in browsers that don't support animation-timeline. */
+@supports (animation-timeline: view()) {
+  .brighten-word {
+    opacity: 0.35;
+    animation: brighten-in linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 50%;
+  }
+}
+
+@keyframes brighten-in {
+  to {
+    opacity: 1;
   }
 }
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "@/components/theme/theme-provider";
 import { siteConfig } from "@/lib/site-config";
 import { formatPath, getNode, resolvePath } from "@/lib/terminal-fs";
 import { encodeBase64, decodeBase64 } from "@/lib/lab/base64";
@@ -28,7 +27,6 @@ const COMMANDS = [
   "date",
   "history",
   "open",
-  "theme",
   "sudo",
   "contact",
   "resume",
@@ -66,7 +64,6 @@ const HELP_TEXT = [
   "  pwd               print working directory",
   "  cat <file>        print a file's contents",
   "  open <page>       navigate the real site (about, projects, security, architecture, browser, flow, lab, pricing, contact, home)",
-  "  theme [dark|light] view or set the color theme",
   "  contact           show contact details",
   "  resume            shortcut for `cat resume.txt`",
   "  projects          shortcut for `ls projects`",
@@ -91,7 +88,6 @@ function promptLabel(cwd: string[]) {
 
 export function Terminal() {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
 
   const [lines, setLines] = useState<OutputLine[]>([]);
   const [cwd, setCwd] = useState<string[]>([]);
@@ -231,18 +227,6 @@ export function Terminal() {
         } else {
           appendLine("output", `Navigating to ${route} …`);
           router.push(route);
-        }
-        break;
-      }
-      case "theme": {
-        const target = args[0]?.toLowerCase();
-        if (!target) {
-          appendLine("output", `current theme: ${theme}`);
-        } else if (target === "dark" || target === "light") {
-          setTheme(target);
-          appendLine("output", `theme set to ${target}`);
-        } else {
-          appendLine("error", "usage: theme [dark|light]");
         }
         break;
       }

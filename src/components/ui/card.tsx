@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 
 export function cardStyles(className?: string) {
   return cn(
-    "rounded-2xl border border-border bg-background-elevated/60 p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg",
+    "rounded-xl border border-border bg-background-elevated/60 p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg",
     className,
   );
 }

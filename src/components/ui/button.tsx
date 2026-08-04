@@ -27,7 +27,7 @@ export function buttonVariants({
   className?: string;
 } = {}) {
   return cn(
-    "inline-flex items-center justify-center gap-2 rounded-full font-mono transition-all duration-200",
+    "inline-flex items-center justify-center gap-2 rounded-xl font-mono transition-all duration-200",
     variantStyles[variant],
     sizeStyles[size],
     className,

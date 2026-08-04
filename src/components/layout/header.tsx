@@ -3,7 +3,6 @@ import Link from "next/link";
 import logoIcon from "../../../public/tacitus-dave-logo-icon.png";
 import { siteConfig } from "@/lib/site-config";
 import { buttonVariants } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { NavMenu } from "@/components/layout/nav-menu";
 
 export function Header() {
@@ -30,7 +29,6 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Link
             href="/lab/authorize"
             className="hidden font-mono text-xs uppercase tracking-widest text-foreground-muted transition-colors hover:text-foreground sm:block"
