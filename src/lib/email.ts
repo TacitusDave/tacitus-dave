@@ -41,3 +41,40 @@ export async function sendAccessKeyEmail(email: string, accessKey: string, orgNa
     `,
   });
 }
+
+export async function sendInviteEmail(params: {
+  email: string;
+  orgName: string;
+  invitedBy: string;
+  acceptUrl: string;
+}): Promise<void> {
+  const resend = getResend();
+
+  await resend.emails.send({
+    from: FROM_ADDRESS,
+    to: params.email,
+    subject: `You're invited to ${params.orgName} on Tacitus Dave OS`,
+    html: `
+      <div style="background:#0a0b0d;padding:40px 24px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;">
+        <div style="max-width:480px;margin:0 auto;background:#121317;border:1px solid #22252b;border-radius:8px;padding:32px;">
+          <p style="color:#2dd4bf;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:0 0 16px;">
+            Tacitus Dave OS &middot; Team Invite
+          </p>
+          <p style="color:#e8eaed;font-size:16px;margin:0 0 24px;">
+            ${params.invitedBy} invited you to join <strong>${params.orgName}</strong> — accepting
+            gives you full access to everything in the Lab your team is subscribed to.
+          </p>
+          <p style="margin:0 0 24px;">
+            <a href="${params.acceptUrl}" style="display:inline-block;background:#2dd4bf;color:#0a0b0d;font-weight:600;text-decoration:none;padding:12px 24px;border-radius:6px;">
+              Accept invite
+            </a>
+          </p>
+          <p style="color:#9aa0a6;font-size:12px;margin:0 0 8px;">
+            This invite expires in 7 days. If you weren't expecting this, you can ignore this email
+            — nothing happens until the link above is opened and accepted.
+          </p>
+        </div>
+      </div>
+    `,
+  });
+}

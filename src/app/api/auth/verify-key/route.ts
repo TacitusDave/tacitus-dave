@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
     recordLabActivity({
       type: "subscriber",
       email: membership.email,
+      orgId: membership.orgId,
       timestamp: Math.floor(Date.now() / 1000),
     }).catch((err) => console.error("Failed to record lab activity:", err));
 

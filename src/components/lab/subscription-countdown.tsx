@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface LabMeResponse {
   authenticated: boolean;
@@ -55,9 +56,12 @@ export function SubscriptionCountdown() {
   if (!info?.authenticated || info.isOwner || !info.currentPeriodEnd) return null;
 
   return (
-    <div className="fixed right-4 top-20 z-40 rounded-full border border-border bg-background-elevated/90 px-3 py-1.5 font-mono text-[11px] text-foreground-muted shadow-lg backdrop-blur-sm sm:right-6">
+    <Link
+      href="/account"
+      className="fixed right-4 top-20 z-40 rounded-full border border-border bg-background-elevated/90 px-3 py-1.5 font-mono text-[11px] text-foreground-muted shadow-lg backdrop-blur-sm transition-colors hover:border-accent sm:right-6"
+    >
       <span className="text-accent">{formatRemaining(info.currentPeriodEnd, now)}</span>
       <span className="ml-1.5 hidden sm:inline">left</span>
-    </div>
+    </Link>
   );
 }
