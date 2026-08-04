@@ -3,6 +3,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ContactForm } from "@/components/contact/contact-form";
 import { SocialLinks } from "@/components/contact/social-links";
 import { CopyButton } from "@/components/lab/copy-button";
+import { Card } from "@/components/ui/card";
+import { Reveal } from "@/components/ui/reveal";
 import { buttonVariants } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site-config";
 
@@ -10,6 +12,53 @@ export const metadata: Metadata = {
   title: "Contact",
   description: "Get in touch with Tacitus Dave for roles, projects, or technical questions.",
 };
+
+const engagementTypes = [
+  {
+    title: "Freelance",
+    detail: "Scoped project work — a feature, a tool, a security review — with a clear start and end.",
+  },
+  {
+    title: "Contract",
+    detail: "Embedded with a team for a defined stretch, on either the engineering or SOC side of the work.",
+  },
+  {
+    title: "Full-time",
+    detail: "Open to the right role — one where security isn't bolted on after the software ships.",
+  },
+] as const;
+
+const expectations = [
+  {
+    title: "Response time",
+    detail: "Usually within a day or two. If it's been longer, the email genuinely got buried — send a follow-up.",
+  },
+  {
+    title: "What to include",
+    detail: "What you're building, the stack, and the actual problem you're stuck on — vague \"let's chat\" emails take longer to get a useful reply.",
+  },
+  {
+    title: "How this works",
+    detail: "No sales calls, no account managers. You're emailing the person who'd actually do the work.",
+  },
+] as const;
+
+const contactFaqs = [
+  {
+    question: "Do you take on short, one-off jobs?",
+    answer:
+      "Yes, if the scope is clear. A single tool, a focused security review, a specific bug — those are easier to say yes to than open-ended \"help with everything.\"",
+  },
+  {
+    question: "Are you open to remote-only work?",
+    answer: "Yes — everything on this site, including this platform itself, was built and is maintained fully remote.",
+  },
+  {
+    question: "Can I ask a technical question without hiring you?",
+    answer:
+      "Sure. Not everything needs to turn into a paid engagement — ask, and if it turns into more later, it turns into more later.",
+  },
+] as const;
 
 const socialLinks = [
   {
@@ -80,6 +129,69 @@ export default function ContactPage() {
             Submitting opens your email client with the message pre-filled — nothing is sent from
             this site directly, and nothing is stored. I typically reply within a day or two.
           </p>
+        </div>
+      </section>
+
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-6 py-12">
+          <Reveal>
+            <h2 className="font-mono text-xs uppercase tracking-widest text-accent">
+              Ways to work together
+            </h2>
+          </Reveal>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {engagementTypes.map((type, index) => (
+              <Reveal key={type.title} delayMs={index * 60}>
+                <Card className="h-full p-5">
+                  <p className="text-sm font-medium text-foreground">{type.title}</p>
+                  <p className="mt-2 text-xs text-foreground-muted">{type.detail}</p>
+                </Card>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-6 py-12">
+          <Reveal>
+            <h2 className="font-mono text-xs uppercase tracking-widest text-accent">
+              What to expect
+            </h2>
+          </Reveal>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {expectations.map((item, index) => (
+              <Reveal key={item.title} delayMs={index * 60}>
+                <Card className="h-full p-5">
+                  <p className="text-sm font-medium text-foreground">{item.title}</p>
+                  <p className="mt-2 text-xs text-foreground-muted">{item.detail}</p>
+                </Card>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-4xl px-6 py-12">
+          <Reveal>
+            <h2 className="font-mono text-xs uppercase tracking-widest text-accent">
+              Questions
+            </h2>
+          </Reveal>
+          <div className="mt-6 flex flex-col divide-y divide-border border-t border-border">
+            {contactFaqs.map((faq) => (
+              <details key={faq.question} className="group py-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium text-foreground marker:content-none">
+                  {faq.question}
+                  <span className="shrink-0 font-mono text-accent transition-transform duration-200 group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-foreground-muted">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
     </>
