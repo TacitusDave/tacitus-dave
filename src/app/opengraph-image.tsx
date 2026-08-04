@@ -16,7 +16,7 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "center",
           padding: "80px",
-          backgroundColor: "#0a0b0d",
+          backgroundColor: "#f3f1ea",
           fontFamily: "monospace",
         }}
       >
@@ -25,22 +25,22 @@ export default function OpengraphImage() {
             display: "flex",
             alignItems: "center",
             gap: 14,
-            color: "#2dd4bf",
+            color: "#0c7568",
             fontSize: 28,
             textTransform: "uppercase",
             letterSpacing: 4,
           }}
         >
-          <div style={{ width: 14, height: 14, borderRadius: 999, backgroundColor: "#2dd4bf", display: "flex" }} />
+          <div style={{ width: 14, height: 14, borderRadius: 999, backgroundColor: "#0c7568", display: "flex" }} />
           Engineering &amp; Cybersecurity
         </div>
-        <div style={{ display: "flex", fontSize: 100, fontWeight: 600, color: "#e8eaed", marginTop: 28 }}>
+        <div style={{ display: "flex", fontSize: 100, fontWeight: 600, color: "#21232a", marginTop: 28 }}>
           {siteConfig.name}
         </div>
-        <div style={{ display: "flex", fontSize: 32, color: "#9aa0a6", marginTop: 24, maxWidth: 960 }}>
+        <div style={{ display: "flex", fontSize: 32, color: "#6b6e73", marginTop: 24, maxWidth: 960 }}>
           {siteConfig.description}
         </div>
-        <div style={{ display: "flex", fontSize: 28, color: "#2dd4bf", marginTop: 44 }}>{siteConfig.motto}</div>
+        <div style={{ display: "flex", fontSize: 28, color: "#0c7568", marginTop: 44 }}>{siteConfig.motto}</div>
       </div>
     ),
     { ...size },

@@ -8,6 +8,7 @@ export const siteConfig = {
     { label: "About", href: "/about" },
     { label: "Projects", href: "/projects" },
     { label: "Lab", href: "/lab" },
+    { label: "Pricing", href: "/pricing" },
     { label: "Contact", href: "/contact" },
   ],
   contactEmail: "tacitusdave@gmail.com",

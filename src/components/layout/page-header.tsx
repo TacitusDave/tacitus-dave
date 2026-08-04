@@ -1,3 +1,5 @@
+import { Reveal } from "@/components/ui/reveal";
+
 export function PageHeader({
   eyebrow,
   title,
@@ -8,7 +10,7 @@ export function PageHeader({
   description: string;
 }) {
   return (
-    <div className="mx-auto max-w-6xl px-6 pb-12 pt-20">
+    <Reveal className="mx-auto max-w-6xl px-6 pb-12 pt-20">
       <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-accent">
         <span className="h-1.5 w-1.5 rounded-full bg-accent" />
         {eyebrow}
@@ -19,6 +21,6 @@ export function PageHeader({
       <p className="mt-4 max-w-2xl text-lg text-foreground-muted">
         {description}
       </p>
-    </div>
+    </Reveal>
   );
 }

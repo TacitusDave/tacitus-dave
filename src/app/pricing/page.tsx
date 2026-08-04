@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
+import { Reveal } from "@/components/ui/reveal";
 import { SubscribeButton } from "@/components/pricing/subscribe-button";
 import { pricingPlans, billingCurrencyNote } from "@/lib/pricing";
 import { labTools } from "@/lib/lab-tools";
+import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -25,39 +27,73 @@ export default function PricingPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-12">
         <div className="grid gap-6 sm:grid-cols-2">
-          {pricingPlans.map((plan) => (
-            <Card key={plan.id} className="relative flex flex-col gap-6">
-              {plan.highlight ? (
-                <span className="absolute -top-3 right-6 rounded-full border border-accent bg-background px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-accent">
-                  {plan.highlight}
-                </span>
-              ) : null}
-              <div>
-                <p className="font-mono text-xs uppercase tracking-widest text-accent">
-                  {plan.label}
-                </p>
-                <p className="mt-2 text-sm text-foreground-muted">{plan.tagline}</p>
-                <p className="mt-3 flex items-baseline gap-1">
-                  <span className="text-4xl font-medium text-foreground">{plan.price}</span>
-                  <span className="text-sm text-foreground-muted">{plan.period}</span>
-                </p>
-                {plan.note ? (
-                  <p className="mt-1 text-xs text-foreground-muted">{plan.note}</p>
-                ) : null}
-              </div>
-              <ul className="flex flex-1 flex-col gap-2">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex gap-2 text-sm text-foreground-muted">
-                    <span aria-hidden="true" className="text-accent">
-                      ✓
+          {pricingPlans.map((plan, index) => {
+            const inverted = plan.highlight === "Best value";
+            return (
+              <Reveal key={plan.id} delayMs={index * 80}>
+                <Card
+                  className={cn(
+                    "relative flex h-full flex-col gap-6",
+                    inverted && "border-transparent bg-[#21232a] text-[#f3f1ea]",
+                  )}
+                >
+                  {plan.highlight ? (
+                    <span
+                      className={cn(
+                        "absolute -top-3 right-6 rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-widest",
+                        inverted
+                          ? "border-white/20 bg-[#f3f1ea] text-[#21232a]"
+                          : "border-accent bg-background text-accent",
+                      )}
+                    >
+                      {plan.highlight}
                     </span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <SubscribeButton plan={plan.id} label={`Subscribe ${plan.label}`} />
-            </Card>
-          ))}
+                  ) : null}
+                  <div>
+                    <p className="font-mono text-xs uppercase tracking-widest text-accent">
+                      {plan.label}
+                    </p>
+                    <p className={cn("mt-2 text-sm", inverted ? "text-white/60" : "text-foreground-muted")}>
+                      {plan.tagline}
+                    </p>
+                    <p className="mt-3 flex items-baseline gap-1">
+                      <span className={cn("text-4xl font-medium", inverted ? "text-white" : "text-foreground")}>
+                        {plan.price}
+                      </span>
+                      <span className={cn("text-sm", inverted ? "text-white/50" : "text-foreground-muted")}>
+                        {plan.period}
+                      </span>
+                    </p>
+                    {plan.note ? (
+                      <p className={cn("mt-1 text-xs", inverted ? "text-white/50" : "text-foreground-muted")}>
+                        {plan.note}
+                      </p>
+                    ) : null}
+                  </div>
+                  <ul className="flex flex-1 flex-col gap-2">
+                    {plan.features.map((feature) => (
+                      <li
+                        key={feature}
+                        className={cn("flex gap-2 text-sm", inverted ? "text-white/80" : "text-foreground-muted")}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px]",
+                            inverted ? "bg-accent text-[#06110f]" : "bg-accent/15 text-accent",
+                          )}
+                        >
+                          ✓
+                        </span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <SubscribeButton plan={plan.id} label={`Subscribe ${plan.label}`} />
+                </Card>
+              </Reveal>
+            );
+          })}
         </div>
 
         <p className="mt-6 text-xs text-foreground-muted">{billingCurrencyNote}</p>
@@ -81,7 +117,7 @@ export default function PricingPage() {
               <Link
                 key={tool.slug}
                 href={tool.href}
-                className="block rounded-md border border-border p-5 transition-colors hover:border-accent"
+                className="block rounded-2xl border border-border bg-background-elevated/60 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-lg"
               >
                 <p className="text-sm font-medium text-foreground">{tool.title}</p>
                 <p className="mt-2 text-xs text-foreground-muted">{tool.tagline}</p>
