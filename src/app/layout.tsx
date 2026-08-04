@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { BackdropFx } from "@/components/layout/backdrop-fx";
+import { CommandPalette } from "@/components/command-palette";
 import { siteConfig } from "@/lib/site-config";
 
 // A close, freely-licensed analog for the premium-grotesque body font used by
@@ -53,6 +54,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <CommandPalette />
       </body>
     </html>
   );

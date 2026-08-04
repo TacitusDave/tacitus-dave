@@ -52,6 +52,14 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
+            className="hidden items-center gap-1.5 rounded-md border border-border px-2 py-1 font-mono text-[11px] text-foreground-muted transition-colors hover:border-accent hover:text-accent md:flex"
+            aria-label="Open command palette"
+          >
+            <span aria-hidden="true">⌘</span>K
+          </button>
           <Link
             href="/lab/authorize"
             className="hidden font-mono text-xs uppercase tracking-widest text-foreground-muted transition-colors hover:text-foreground sm:block"
