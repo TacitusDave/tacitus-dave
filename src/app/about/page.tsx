@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { brandTraits, brandPromise, focusAreas } from "@/lib/content";
-import { Card } from "@/components/ui/card";
+import { focusAreas } from "@/lib/content";
+import { labTools, type LabCategory } from "@/lib/lab-tools";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { ProfilePhoto } from "@/components/about/profile-photo";
 
+const categoryCount = new Set<LabCategory>(labTools.map((tool) => tool.category)).size;
+
+const stats = [
+  { value: String(labTools.length), label: "Lab tools", detail: "Each one does real computation client-side — no mocked output." },
+  { value: String(categoryCount), label: "Tool categories", detail: "Security, systems & networking, developer utilities, search & browsing." },
+  { value: "0", label: "UI or animation libraries", detail: "Every transition, scroll effect, and layout here is hand-written CSS and React." },
+  { value: "1", label: "Person building this", detail: "No team, no agency — every line on this site is mine." },
+] as const;
+
 export const metadata: Metadata = {
-  title: "About",
+  title: "Profile",
   description:
     "How Tacitus Dave bridges software engineering and cybersecurity — the philosophy behind a platform built on transparency, security-first thinking, and continuous learning.",
 };
@@ -22,7 +32,7 @@ export default function AboutPage() {
           <div className="flex-1">
             <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-accent">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              About
+              Profile
             </div>
 
             <h1 className="mt-4 text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
@@ -83,38 +93,16 @@ export default function AboutPage() {
       <section className="border-t border-border">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <h2 className="font-mono text-xs uppercase tracking-widest text-accent">
-            What you can expect
+            What&apos;s actually here
           </h2>
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-            {brandPromise.map((item) => (
-              <li
-                key={item}
-                className="flex items-start gap-3 rounded-md border border-border p-4 text-sm text-foreground-muted"
-              >
-                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-accent">
-            How this platform operates
-          </h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {brandTraits.map(({ trait, description }) => (
-              <Card key={trait} className="p-5 hover:border-accent">
-                <div className="flex items-center gap-2">
-                  <Badge className="border-accent/40 text-accent">
-                    {trait}
-                  </Badge>
-                </div>
-                <p className="mt-3 text-xs text-foreground-muted">
-                  {description}
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {stats.map((stat) => (
+              <Card key={stat.label} className="p-5 hover:border-accent">
+                <p className="font-mono text-3xl font-medium text-foreground">{stat.value}</p>
+                <p className="mt-2 text-xs font-medium uppercase tracking-widest text-accent">
+                  {stat.label}
                 </p>
+                <p className="mt-2 text-xs text-foreground-muted">{stat.detail}</p>
               </Card>
             ))}
           </div>

@@ -15,53 +15,30 @@ export const focusAreas = [
 
 export const pillars = [
   {
-    title: "Engineering Excellence",
+    title: "Real Software, Not Mockups",
     description:
-      "High-quality software engineering built upon strong architectural foundations.",
+      "The terminal, the SOC dashboard, the flow canvas — every interactive piece on this site is working code you can use right now, not a screenshot of what I could build.",
   },
   {
-    title: "Security by Design",
+    title: "Security-First, Not Security-Bolted-On",
     description:
-      "Every system is secure from the first design decision through production operations.",
+      "I read real alerts on real SOC shifts. That's the same lens I bring to the first line of code, not something added after the fact.",
   },
   {
-    title: "Operational Reliability",
+    title: "Built to Operate, Not Just Ship",
     description:
-      "Software is only successful when it remains available, observable, maintainable, and resilient.",
+      "A demo that works once is easy. Software that stays observable, debuggable, and boring under real load is the actual job.",
   },
   {
-    title: "Continuous Learning",
-    description: "Technology evolves constantly. The work evolves with it.",
+    title: "The Reasoning Is Public",
+    description:
+      "The architecture walkthroughs and project write-ups on this site explain the tradeoff, not just the result — because 'it works' isn't an explanation.",
   },
   {
-    title: "Knowledge Sharing",
+    title: "Always Under Construction",
     description:
-      "Teaching reinforces mastery. Documentation and writing are as important as the code itself.",
+      "This platform ships in the open and keeps changing. What you're looking at today is not the final version.",
   },
-] as const;
-
-export const brandTraits = [
-  { trait: "Intelligent", description: "Knowledgeable without being arrogant." },
-  { trait: "Calm", description: "Professional under pressure." },
-  { trait: "Precise", description: "Every detail matters." },
-  { trait: "Reliable", description: "Systems should be dependable." },
-  { trait: "Curious", description: "Always learning." },
-  { trait: "Innovative", description: "Adopts modern technologies thoughtfully." },
-  { trait: "Transparent", description: "Documents decisions and shares lessons learned." },
-  { trait: "Disciplined", description: "Structured engineering practices." },
-  { trait: "Helpful", description: "Knowledge should be shared generously." },
-  { trait: "Professional", description: "Enterprise quality in every interaction." },
-] as const;
-
-export const brandPromise = [
-  "Understand complex systems.",
-  "Design scalable architectures.",
-  "Build production-grade software.",
-  "Secure modern applications.",
-  "Deploy reliable infrastructure.",
-  "Monitor distributed systems.",
-  "Respond to security incidents.",
-  "Communicate technical decisions clearly.",
 ] as const;
 
 export interface Project {
@@ -74,6 +51,8 @@ export interface Project {
   image?: string;
   /** URL of the live deployed site, if it's publicly reachable. */
   liveUrl?: string;
+  /** Path to a live page on this same site, for projects that are part of this platform. */
+  internalUrl?: string;
 }
 
 export const projects: Project[] = [
@@ -89,21 +68,23 @@ export const projects: Project[] = [
     liveUrl: "https://ndukego-ltd.vercel.app",
   },
   {
-    slug: "placeholder-project-two",
-    title: "Project Two",
+    slug: "in-browser-terminal",
+    title: "A Real Shell, Running in the Browser",
     summary:
-      "A short, concrete description of the system: what it does, the scale it runs at, and the core engineering problem it solves.",
+      "Not a themed textarea — a command parser, a virtual filesystem, tab-completion, and history, built from scratch and shipped as this platform's own front door.",
     details:
-      "Replace this with the real architecture story: the constraint that shaped the design, the tradeoff that was made, and what it would look like done differently today.",
-    tags: ["Go", "Kubernetes", "AWS"],
+      "Most portfolio 'terminals' are a fixed-width font and a typing animation. This one parses real input, walks an actual virtual filesystem (cd, ls, cat, tree all work the way you'd expect), keeps arrow-key history, and tab-completes paths and commands. It also runs a sandboxed JavaScript REPL in-browser, plus real utility commands — base64, hashing, URL encode/decode, UUID generation — that compute actual output rather than printing a canned string. The constraint that shaped it: everything had to run client-side with zero backend calls, so every command is pure, synchronous, and testable in isolation. It's the same component embedded live on the homepage and in the Lab — not a screenshot of itself.",
+    tags: ["TypeScript", "Web Crypto API", "Command Parser", "Virtual Filesystem"],
+    internalUrl: "/terminal",
   },
   {
-    slug: "placeholder-project-three",
-    title: "Project Three",
+    slug: "flow-builder",
+    title: "A Diagram Canvas, Not Just a Flowchart Tool",
     summary:
-      "A short, concrete description of the system: what it does, the scale it runs at, and the core engineering problem it solves.",
+      "A full drag-and-connect canvas with auto-layout, undo/redo, autosave, and PNG/JSON export — built on React Flow, not a wrapper around someone else's editor.",
     details:
-      "Replace this with the real architecture story: the constraint that shaped the design, the tradeoff that was made, and what it would look like done differently today.",
-    tags: ["Python", "Terraform", "GCP"],
+      "Started as a flowchart tool and grew into a general design canvas: 310+ icons grouped by category, automatic graph layout via Dagre, a full undo/redo history stack, inline double-click-to-rename on every node and edge, autosave to localStorage with non-serializable state stripped before persisting, and one-click export to PNG or a re-importable JSON file. The hard part wasn't the drawing — it was making the editor feel instant: layout recalculation, history snapshots, and canvas rendering all had to stay off the main interaction thread's critical path so dragging a node never stutters, even with a large graph on screen.",
+    tags: ["React Flow", "Dagre", "Undo/Redo", "Client-Side Export"],
+    internalUrl: "/flow",
   },
 ];

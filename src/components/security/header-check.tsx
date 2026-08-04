@@ -52,8 +52,9 @@ export function HeaderCheck() {
       </div>
       <p className="mt-2 max-w-2xl text-sm text-foreground-muted">
         Enter a real URL and I&apos;ll actually fetch it and inspect its response headers — the
-        same starting point a SOC analyst uses to gauge a site&apos;s baseline hardening. This is
-        a preview slice of a real audit (six headers); the full Lab covers a lot more surface.
+        same starting point a SOC analyst uses to gauge a site&apos;s baseline hardening. It
+        checks six headers that matter most: HSTS, CSP, X-Frame-Options, X-Content-Type-Options,
+        Referrer-Policy, and Permissions-Policy. Free, no account needed.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-4 flex flex-wrap gap-3">

@@ -2,17 +2,27 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import profileImage from "../../../public/profile.jpg";
+import profilePlaceholder from "../../../public/profile-placeholder.jpg";
 import { siteConfig } from "@/lib/site-config";
 
 export function ProfilePhoto() {
   const [revealed, setRevealed] = useState(false);
+  // The real photo is never in the page until this flips — before that, the
+  // client only ever has the de-identified placeholder (downsampled to 20px
+  // then blurred, not just CSS-blurred), so view-source/save-image/scrapers
+  // never see the real face.
+  const [interacted, setInteracted] = useState(false);
 
   return (
     <div className="mx-auto w-48 shrink-0 sm:w-56 lg:mx-0">
       <button
         type="button"
-        onClick={() => setRevealed((r) => !r)}
+        onClick={() => {
+          setInteracted(true);
+          setRevealed((r) => !r);
+        }}
+        onMouseEnter={() => setInteracted(true)}
+        onFocus={() => setInteracted(true)}
         aria-pressed={revealed}
         aria-label={
           revealed
@@ -20,16 +30,24 @@ export function ProfilePhoto() {
             : `Portrait of ${siteConfig.name}, obscured — tap or hover to reveal`
         }
         data-revealed={revealed}
-        className="profile-frame block w-full cursor-pointer border border-border outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        className="profile-frame relative block w-full cursor-pointer border border-border outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         <Image
-          src={profileImage}
+          src={profilePlaceholder}
           alt=""
           priority
-          placeholder="blur"
           sizes="(min-width: 1024px) 224px, 192px"
-          className="profile-photo h-auto w-full object-cover"
+          className="h-auto w-full object-cover"
         />
+        {interacted ? (
+          <Image
+            src="/profile.jpg"
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 224px, 192px"
+            className="profile-photo absolute inset-0 h-full w-full object-cover"
+          />
+        ) : null}
         <span className="profile-overlay" aria-hidden="true" />
       </button>
       <p className="mt-3 text-center font-mono text-[11px] text-foreground-muted lg:text-left">

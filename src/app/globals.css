@@ -3,8 +3,8 @@
 :root {
   color-scheme: light;
 
-  /* Provet's exact token values (extracted from their compiled CSS) —
-     white base, navy-900 text, blue-600 accent. */
+  /* Tacitus Dave design tokens — light base, deep-navy text, cobalt accent.
+     Single source of truth for the whole site; nothing here overrides. */
   --background: #ffffff;
   --background-elevated: #f3f3f4;
   --foreground: #09122a;
@@ -16,6 +16,13 @@
   --accent-rgb: 53, 89, 199;
   --grid-line: rgba(9, 18, 42, 0.04);
   --glow-opacity: 0.08;
+
+  /* Semantic status tones, used by the SOC dashboard, form validation, and
+     any future state indicators — kept separate from --accent so "this
+     matters" (accent) never gets confused with "this succeeded / failed". */
+  --status-success: #1a8a5f;
+  --status-warning: #b8760a;
+  --status-danger: #c53434;
 }
 
 @theme inline {
@@ -26,6 +33,9 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

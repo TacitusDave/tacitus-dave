@@ -5,10 +5,10 @@ export const siteConfig = {
   description:
     "Full-stack developer and SOC analyst building production-ready systems that solve real-world problems — reliable, scalable, and secure from the first line of code.",
   nav: [
-    { label: "About", href: "/about" },
-    { label: "Projects", href: "/projects" },
+    { label: "Profile", href: "/about" },
+    { label: "Builds", href: "/projects" },
     { label: "Lab", href: "/lab" },
-    { label: "Pricing", href: "/pricing" },
+    { label: "Access", href: "/pricing" },
     { label: "Contact", href: "/contact" },
   ],
   contactEmail: "tacitusdave@gmail.com",

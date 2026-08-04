@@ -4,7 +4,7 @@ import { projects } from "@/lib/content";
 import { ProjectCard } from "@/components/projects/project-card";
 
 export const metadata: Metadata = {
-  title: "Projects",
+  title: "Builds",
   description:
     "Engineering case studies from Tacitus Dave — systems built end to end, with the reasoning behind each decision.",
 };
@@ -13,7 +13,7 @@ export default function ProjectsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Projects"
+        eyebrow="Builds"
         title="Engineering case studies."
         description="Systems built end to end — from architecture decisions through deployment and operation. Each case study explains not just what was built, but why."
       />

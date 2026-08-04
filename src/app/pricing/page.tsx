@@ -9,7 +9,7 @@ import { labTools } from "@/lib/lab-tools";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
-  title: "Pricing",
+  title: "Access",
   description:
     "Subscribe to unlock the full Tacitus Dave Lab — a premium, ever-expanding suite of developer and security utilities, crafted for professionals who won't settle for the free-tier version.",
 };
@@ -20,7 +20,7 @@ export default function PricingPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Pricing"
+        eyebrow="Access"
         title="Unlock the full Lab."
         description="The flagship demonstrations — Terminal, SOC Dashboard, Architecture Explorer, Browser — stay free, always. A subscription unlocks the rest of the Lab: a premium, continuously expanding suite of production-grade utilities, built to the same standard as the tools you'd trust in a real engineering workflow — no ads, no artificial limits, no watered-down 'free tier' experience."
       />

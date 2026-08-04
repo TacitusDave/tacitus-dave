@@ -1,5 +1,5 @@
 import { siteConfig } from "@/lib/site-config";
-import { focusAreas } from "@/lib/content";
+import { focusAreas, projects } from "@/lib/content";
 
 export interface FsFile {
   type: "file";
@@ -24,7 +24,7 @@ export const fsRoot: FsDir = {
     "resume.txt": {
       type: "file",
       content:
-        "Resume — placeholder. Run `open contact` to ask for the real one directly.",
+        "No PDF resume yet — run `open contact` to request one directly, or `cat about.txt` for the short version.",
     },
     "skills.txt": {
       type: "file",
@@ -44,20 +44,15 @@ export const fsRoot: FsDir = {
     },
     projects: {
       type: "dir",
-      children: {
-        "project-one.md": {
-          type: "file",
-          content: "Project One — replace with a real case study.",
-        },
-        "project-two.md": {
-          type: "file",
-          content: "Project Two — replace with a real case study.",
-        },
-        "project-three.md": {
-          type: "file",
-          content: "Project Three — replace with a real case study.",
-        },
-      },
+      children: Object.fromEntries(
+        projects.map((project) => [
+          `${project.slug}.md`,
+          {
+            type: "file" as const,
+            content: `${project.title}\n\n${project.summary}\n\n${project.details}\n\nRun \`open projects\` to see it on the site.`,
+          },
+        ]),
+      ),
     },
   },
 };

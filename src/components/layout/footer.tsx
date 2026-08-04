@@ -22,6 +22,12 @@ export function Footer() {
               {item.label}
             </Link>
           ))}
+          <Link
+            href="/privacy"
+            className="font-mono text-xs uppercase tracking-widest text-foreground-muted transition-colors hover:text-accent"
+          >
+            Privacy
+          </Link>
         </nav>
       </div>
     </footer>

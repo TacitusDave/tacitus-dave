@@ -5,6 +5,7 @@ import Image from "next/image";
 import { projects } from "@/lib/content";
 import { Badge } from "@/components/ui/badge";
 import { cardStyles } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
 import { ProjectLiveLink } from "@/components/projects/project-live-link";
 
 export function generateStaticParams() {
@@ -63,6 +64,12 @@ export default async function ProjectPage({
         {project.liveUrl ? (
           <div className="mt-6">
             <ProjectLiveLink url={project.liveUrl} title={project.title} />
+          </div>
+        ) : project.internalUrl ? (
+          <div className="mt-6">
+            <Link href={project.internalUrl} className={buttonVariants()}>
+              Try It Live ↗
+            </Link>
           </div>
         ) : null}
 
