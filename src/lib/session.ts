@@ -9,11 +9,28 @@ function requireSessionSecret(): string {
   return secret;
 }
 
-export async function createSessionToken(email: string): Promise<string> {
-  return createSignedToken({ email }, requireSessionSecret(), SESSION_TTL_SECONDS);
+export interface SessionIdentity {
+  email: string;
+  /** Null for the owner's personal bypass session, which isn't tied to any Organization. */
+  orgId: string | null;
 }
 
-export async function verifySessionToken(token: string | undefined | null): Promise<string | null> {
-  const payload = await verifySignedToken<{ email: string }>(token, requireSessionSecret());
-  return typeof payload?.email === "string" ? payload.email : null;
+/**
+ * Deliberately identity-only — never role. Every request that makes a
+ * role-based decision re-reads the live Membership from Redis instead, the
+ * same way access itself is already re-derived fresh on every request
+ * rather than trusted from the token. A stale token must never be able to
+ * grant privileges a live Redis check would deny.
+ */
+export async function createSessionToken(email: string, orgId: string | null): Promise<string> {
+  return createSignedToken({ email, orgId }, requireSessionSecret(), SESSION_TTL_SECONDS);
+}
+
+export async function verifySessionToken(token: string | undefined | null): Promise<SessionIdentity | null> {
+  const payload = await verifySignedToken<{ email: string; orgId: string | null }>(
+    token,
+    requireSessionSecret(),
+  );
+  if (typeof payload?.email !== "string") return null;
+  return { email: payload.email, orgId: typeof payload.orgId === "string" ? payload.orgId : null };
 }

@@ -123,7 +123,7 @@ async function grantFromEvent(event: PaystackWebhookEvent): Promise<void> {
   });
 
   if (isNewKey) {
-    await sendAccessKeyEmail(email, accessKey).catch((error) =>
+    await sendAccessKeyEmail(email, accessKey, org.name).catch((error) =>
       console.error("Failed to send access key email:", error),
     );
   }

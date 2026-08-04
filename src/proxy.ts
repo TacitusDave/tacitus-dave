@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
+import { SESSION_COOKIE, verifySessionToken, type SessionIdentity } from "@/lib/session";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-session";
-import { getSubscriber, isActiveSubscriber } from "@/lib/subscribers";
+import { getMembership } from "@/lib/memberships";
+import { getOrganization, isActiveOrganization } from "@/lib/organizations";
 import { OWNER_SESSION_EMAIL } from "@/lib/owner-code";
 
 export const config = {
@@ -39,31 +40,40 @@ async function handleLab(request: NextRequest, pathname: string) {
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
 
-  let email: string | null = null;
+  let identity: SessionIdentity | null = null;
   try {
-    email = await verifySessionToken(token);
+    identity = await verifySessionToken(token);
   } catch (error) {
     // SESSION_SECRET missing, etc. — fail closed (treat as unauthenticated) rather than 500ing.
     console.error("Lab session verification failed:", error);
   }
 
-  if (!email) {
+  if (!identity) {
     return redirectToAuthorize(request, pathname);
   }
 
-  // The owner's bypass session isn't tied to a subscriber record, so it has
+  const { email, orgId } = identity;
+
+  // The owner's bypass session isn't tied to any Organization, so it has
   // nothing to check here — its only revocation path is rotating the code.
   if (email !== OWNER_SESSION_EMAIL) {
+    if (!orgId) {
+      return redirectToAuthorize(request, pathname);
+    }
     try {
-      const subscriber = await getSubscriber(email);
-      if (!isActiveSubscriber(subscriber)) {
+      // Checking live Membership existence (not just "is the org active") is
+      // what makes removing a team member take effect immediately, with no
+      // session blocklist needed — same mechanism this app already relies
+      // on for per-subscriber revocation, just extended by one field.
+      const [membership, org] = await Promise.all([getMembership(orgId, email), getOrganization(orgId)]);
+      if (!membership || !isActiveOrganization(org)) {
         return redirectToAuthorize(request, pathname);
       }
     } catch (error) {
       // Redis unreachable — fail open. The signed session is still evidence
       // of a legitimate prior grant; an outage shouldn't lock out every
-      // existing subscriber at once over an unrelated infrastructure issue.
-      console.error("Subscriber status check failed:", error);
+      // paying team at once over an unrelated infrastructure issue.
+      console.error("Membership status check failed:", error);
     }
   }
 

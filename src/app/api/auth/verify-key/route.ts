@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSubscriberByAccessKey, isActiveSubscriber } from "@/lib/subscribers";
+import { getMembershipByAccessKey } from "@/lib/memberships";
+import { getOrganization, isActiveOrganization } from "@/lib/organizations";
 import { normalizeAccessKey } from "@/lib/access-key";
 import { createSessionToken, SESSION_COOKIE } from "@/lib/session";
 import { recordLabActivity } from "@/lib/lab-activity";
@@ -37,8 +38,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const subscriber = await getSubscriberByAccessKey(normalizeAccessKey(key));
-    if (!isActiveSubscriber(subscriber) || !subscriber) {
+    const membership = await getMembershipByAccessKey(normalizeAccessKey(key));
+    const org = membership ? await getOrganization(membership.orgId) : null;
+    if (!membership || !isActiveOrganization(org)) {
       await recordFailure(RATE_LIMIT_SCOPE, identifier).catch(() => {});
       return NextResponse.json({ error: "Invalid or expired access key." }, { status: 401 });
     }
@@ -46,11 +48,11 @@ export async function POST(request: NextRequest) {
     await clearAttempts(RATE_LIMIT_SCOPE, identifier).catch(() => {});
     recordLabActivity({
       type: "subscriber",
-      email: subscriber.email,
+      email: membership.email,
       timestamp: Math.floor(Date.now() / 1000),
     }).catch((err) => console.error("Failed to record lab activity:", err));
 
-    const token = await createSessionToken(subscriber.email);
+    const token = await createSessionToken(membership.email, membership.orgId);
     const response = NextResponse.json({ ok: true });
     // No maxAge/expires: a session-only cookie that dies when the browser
     // closes, on purpose — this is a shared-device-safe login, not a

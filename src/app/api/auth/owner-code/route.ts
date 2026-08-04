@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       console.error("Failed to record lab activity:", err),
     );
 
-    const token = await createSessionToken(OWNER_SESSION_EMAIL);
+    const token = await createSessionToken(OWNER_SESSION_EMAIL, null);
     const response = NextResponse.json({ ok: true });
     response.cookies.set(SESSION_COOKIE, token, {
       httpOnly: true,
