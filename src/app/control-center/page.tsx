@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LogoutButton } from "@/components/admin/logout-button";
-import { SubscriberManager } from "@/components/admin/subscriber-manager";
+import { OrgManager } from "@/components/admin/org-manager";
 import { OwnerCodePanel } from "@/components/admin/owner-code-panel";
 import { ActivityLog } from "@/components/admin/activity-log";
 
@@ -15,13 +15,13 @@ export default function ControlCenterPage() {
       <div className="flex items-center justify-between">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-accent">Control Center</p>
-          <h1 className="mt-2 text-2xl font-medium tracking-tight text-foreground">Subscribers</h1>
+          <h1 className="mt-2 text-2xl font-medium tracking-tight text-foreground">Organizations</h1>
         </div>
         <LogoutButton />
       </div>
 
       <div className="mt-8">
-        <SubscriberManager />
+        <OrgManager />
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">

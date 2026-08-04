@@ -107,3 +107,28 @@ export async function setOrganizationStatus(id: string, status: OrganizationStat
   if (!record) return;
   await setOrganization({ ...record, status });
 }
+
+/**
+ * Admin-only: grant or extend org access with no real Paystack subscription
+ * behind it (comps, manual overrides) — same reasoning as
+ * subscribers.ts's grantManualAccess. Uses a synthetic, deterministic
+ * "manual:{email}" customer code so repeat grants extend the same org
+ * instead of creating duplicates.
+ */
+export async function grantManualOrganization(email: string, days: number): Promise<OrganizationRecord> {
+  const customerCode = `manual:${email.toLowerCase()}`;
+  const existing = await getOrganizationByCustomerCode(customerCode);
+  const record: OrganizationRecord = {
+    id: existing?.id ?? generateOrgId(),
+    name: existing?.name ?? `${email}'s workspace`,
+    ownerEmail: existing?.ownerEmail ?? email,
+    paystackCustomerCode: customerCode,
+    paystackSubscriptionCode: existing?.paystackSubscriptionCode ?? "manual",
+    status: existing?.status === "active" ? "active" : "manual",
+    plan: existing?.plan ?? "monthly",
+    currentPeriodEnd: Math.floor(Date.now() / 1000) + days * 24 * 60 * 60,
+    createdAt: existing?.createdAt ?? Math.floor(Date.now() / 1000),
+  };
+  await setOrganization(record);
+  return record;
+}
