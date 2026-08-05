@@ -72,7 +72,9 @@ export function OwnerSessionsPanel() {
       <p className="mt-2 text-xs text-foreground-muted">
         Every redemption of the owner access code, by IP — since the code itself isn&apos;t tied to
         anyone. Revoking one signs that redemption out immediately without touching the code or
-        anyone else&apos;s session.
+        anyone else&apos;s session. Every session here also disappears automatically the moment the
+        code above rotates, whether that&apos;s its normal 12-hour refresh or a manual
+        regeneration — a fresh start every time, with nothing further to click.
       </p>
 
       {sessions === null ? (

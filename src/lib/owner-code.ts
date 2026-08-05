@@ -48,3 +48,26 @@ export function verifyOwnerCode(candidate: string): boolean {
   // window: 1 gives +/- one period of tolerance around a rotation boundary.
   return totp().validate({ token: candidate.trim(), window: 1 }) !== null;
 }
+
+async function sha256Hex(input: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+/**
+ * A fingerprint for "the code as it currently stands" — changes on every
+ * natural 12-hour rotation (the period boundary) AND on a manual
+ * OWNER_CODE_SECRET regeneration (the secret itself changes), independent
+ * of each other. owner-sessions.ts stamps this onto every redemption and
+ * compares it live on each request: either kind of "the code refreshed"
+ * invalidates every previously issued owner-code session at once, with no
+ * sweep or cleanup job needed — a stale session just stops matching.
+ * Hashed (not the raw secret) so nothing sensitive ends up in Redis.
+ */
+export async function currentOwnerCodeEpoch(): Promise<string> {
+  const periodStart = Math.floor(Date.now() / 1000 / PERIOD_SECONDS) * PERIOD_SECONDS;
+  const fingerprint = (await sha256Hex(requireSecret())).slice(0, 16);
+  return `${periodStart}:${fingerprint}`;
+}

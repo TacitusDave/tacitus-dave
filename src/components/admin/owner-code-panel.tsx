@@ -74,7 +74,9 @@ export function OwnerCodePanel() {
       <p className="mt-2 text-xs text-foreground-muted">
         Bypasses billing entirely — enter this at /lab/authorize for free Lab access. It rotates
         itself automatically every 12 hours, so there&apos;s nothing to click and nothing that
-        depends on a database — a leaked code is only useful until its own expiry below.
+        depends on a database — a leaked code is only useful until its own expiry below. Every
+        rotation also signs out everyone currently using an owner-code session, no matter how
+        recently they signed in — see the panel below.
       </p>
 
       {info === undefined ? (
