@@ -159,6 +159,26 @@ body {
   }
 }
 
+@keyframes hero-flank-drift-left {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(10px, -14px, 0) rotate(2deg);
+  }
+}
+
+@keyframes hero-flank-drift-right {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-12px, 12px, 0) rotate(-2deg);
+  }
+}
+
 @keyframes backdrop-flow {
   0% {
     transform: translate3d(-3%, -2%, 0) scale(1);

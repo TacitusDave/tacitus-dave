@@ -8,6 +8,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { ScrollBrightenText } from "@/components/ui/scroll-brighten-text";
 import { RadialBurst } from "@/components/lab/radial-burst";
+import { HeroFlankArt } from "@/components/home/hero-flank-art";
 import { ToolStack } from "@/components/home/tool-stack";
 import { TechMarquee } from "@/components/home/tech-marquee";
 import { FeatureShowcase } from "@/components/home/feature-showcase";
@@ -56,12 +57,29 @@ export default function Home() {
             }}
           />
 
+          <HeroFlankArt
+            side="left"
+            className="pointer-events-none absolute -left-6 top-1/2 hidden h-[420px] w-[420px] -translate-y-1/2 text-accent/[0.4] lg:block xl:-left-10"
+            style={{
+              maskImage: "linear-gradient(to right, black 0%, black 55%, transparent 92%)",
+              WebkitMaskImage: "linear-gradient(to right, black 0%, black 55%, transparent 92%)",
+            }}
+          />
+          <HeroFlankArt
+            side="right"
+            className="pointer-events-none absolute -right-6 top-1/2 hidden h-[420px] w-[420px] -translate-y-1/2 text-accent/[0.4] lg:block xl:-right-10"
+            style={{
+              maskImage: "linear-gradient(to left, black 0%, black 55%, transparent 92%)",
+              WebkitMaskImage: "linear-gradient(to left, black 0%, black 55%, transparent 92%)",
+            }}
+          />
+
           <div
             style={{
               opacity: "calc(1 - var(--scroll-progress, 0) * 3)",
               transform: "translateY(calc(var(--scroll-progress, 0) * -40px))",
             }}
-            className="relative flex flex-col items-center gap-7"
+            className="relative z-10 flex flex-col items-center gap-7"
           >
             <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-accent">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />
