@@ -49,7 +49,7 @@ export default function Home() {
       <ScrollProgress heightVh={340}>
         <div className="relative mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-6 text-center">
           <RadialBurst
-            className="pointer-events-none absolute left-1/2 top-[38%] h-[640px] w-[640px] -translate-x-1/2 -translate-y-1/2 text-accent/[0.08]"
+            className="pointer-events-none absolute left-1/2 top-[38%] h-[640px] w-[640px] -translate-x-1/2 -translate-y-1/2 text-accent/[0.18]"
             style={{
               maskImage: "radial-gradient(circle, black 0%, black 30%, transparent 70%)",
               WebkitMaskImage: "radial-gradient(circle, black 0%, black 30%, transparent 70%)",
