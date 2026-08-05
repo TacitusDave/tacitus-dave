@@ -60,10 +60,18 @@ export function Header() {
           </nav>
         </div>
 
-        {/* Center: logo, floating pill — desktop only, matches the reference nav's centered mark */}
+        {/* Center: logo, floating glass pill — desktop only. Liquid-glass
+            treatment: heavy backdrop blur + saturation lift so whatever
+            scrolls underneath actually shows through refracted, a bright
+            inset top edge to read as a lit glass rim, and a soft outer
+            shadow to lift it off the page — not just a tinted box. */}
         <Link
           href="/"
-          className="hidden items-center gap-2 rounded-full border border-border bg-background-elevated/80 px-4 py-1.5 shadow-sm transition-colors hover:border-accent md:flex"
+          className="hidden items-center gap-2 rounded-full border border-white/70 bg-white/35 px-4 py-1.5 backdrop-blur-xl backdrop-saturate-150 transition-all hover:border-accent/50 hover:bg-white/50 md:flex"
+          style={{
+            boxShadow:
+              "0 8px 24px -8px rgba(9, 18, 42, 0.18), 0 1px 2px rgba(9, 18, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.4)",
+          }}
         >
           <Image src={logoIcon} alt="" priority width={22} height={22} className="rounded-md" />
           <span className="font-mono text-sm font-medium tracking-tight text-foreground">

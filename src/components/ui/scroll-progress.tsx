@@ -49,7 +49,12 @@ export function ScrollProgress({ children, heightVh = 250, className }: ScrollPr
   }, []);
 
   return (
-    <div ref={wrapperRef} style={{ height: `${heightVh}vh` }} className={className}>
+    <div
+      ref={wrapperRef}
+      data-scroll-progress-root=""
+      style={{ height: `${heightVh}vh` }}
+      className={className}
+    >
       <div className="sticky top-0 h-screen overflow-hidden">{children}</div>
     </div>
   );
