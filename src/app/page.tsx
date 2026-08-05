@@ -8,7 +8,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { ScrollBrightenText } from "@/components/ui/scroll-brighten-text";
 import { RadialBurst } from "@/components/lab/radial-burst";
-import { Terminal } from "@/components/terminal/terminal";
+import { ToolStack } from "@/components/home/tool-stack";
 import { TechMarquee } from "@/components/home/tech-marquee";
 import { FeatureShowcase } from "@/components/home/feature-showcase";
 
@@ -95,17 +95,30 @@ export default function Home() {
             </div>
           </div>
 
-          <div
-            style={{ transform: "scale(calc(0.82 + var(--scroll-progress, 0) * 0.4))" }}
-            className="pointer-events-none relative mt-12 w-full max-w-3xl origin-center shadow-2xl"
-            aria-hidden="true"
-            // @ts-expect-error -- `inert` is a valid DOM attribute; React's types haven't caught up.
-            inert=""
-          >
-            <Terminal />
-          </div>
+          <ToolStack />
         </div>
       </ScrollProgress>
+
+      <section className="border-t border-border">
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 px-6 py-16 text-center">
+          <Reveal className="flex flex-col items-center gap-4">
+            <p className="font-mono text-xs uppercase tracking-widest text-accent">
+              That was five tools stacked behind one terminal
+            </p>
+            <h2 className="text-xl font-medium tracking-tight text-foreground sm:text-2xl">
+              Want to test them out yourself?
+            </h2>
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-4">
+              <Link href="/lab" className={buttonVariants()}>
+                Try the free tools
+              </Link>
+              <Link href="/pricing" className={buttonVariants({ variant: "outline" })}>
+                Get Started
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
       <TechMarquee />
 

@@ -57,17 +57,18 @@ export function FeatureShowcase() {
   const ActiveComponent = active === 0 ? Terminal : active === 1 ? SocDashboard : FlowBuilder;
 
   return (
-    <div
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      className="flex flex-col gap-8"
-    >
+    <div className="flex flex-col gap-8">
       <div className="grid gap-2 sm:grid-cols-3">
         {TABS.map((tab, index) => (
           <button
             key={tab.id}
             type="button"
-            onClick={() => setActive(index)}
+            onClick={() => {
+              setActive(index);
+              // Only an explicit click pins the selection — hovering the
+              // showcase must never interrupt the auto-advance.
+              setPaused(true);
+            }}
             className={cn(
               "flex flex-col gap-2 rounded-xl border p-4 text-left transition-colors",
               index === active ? "border-accent bg-background-elevated" : "border-border hover:border-accent/50",
