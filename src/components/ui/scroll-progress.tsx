@@ -55,7 +55,10 @@ export function ScrollProgress({ children, heightVh = 250, className }: ScrollPr
       style={{ height: `${heightVh}vh` }}
       className={className}
     >
-      <div className="sticky top-0 h-screen overflow-hidden">{children}</div>
+      {/* top-24 matches the floating header's clearance (see layout.tsx's
+          main pt-24) so pinned content settles below the glass island
+          instead of sliding underneath it. */}
+      <div className="sticky top-24 h-[calc(100vh-6rem)] overflow-hidden">{children}</div>
     </div>
   );
 }

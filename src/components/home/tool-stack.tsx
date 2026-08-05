@@ -121,19 +121,20 @@ export function ToolStack() {
       cardRefs.current.forEach((card, index) => {
         if (!card) return;
         const relative = index - frontPosition;
-        const depth = Math.min(Math.abs(relative), 3);
+        // Capped lower than before (1.8, not 3) — the exit should be
+        // complete quickly, not linger across a wide scroll range. This is
+        // a decisive swap, closer to swiping between iOS home screens, not
+        // a slow stack-recede: the outgoing card is already sliding away
+        // and fading out fast while the next one comes in from the side,
+        // rather than everything crossfading gently in place.
+        const depth = Math.min(Math.abs(relative), 1.8);
         const direction = relative === 0 ? 0 : relative > 0 ? 1 : -1;
 
-        const scale = 1 - depth * 0.1;
-        // Exponential, not linear — a linear falloff leaves two adjacent
-        // cards similarly (~70%) opaque at the exact midpoint of a
-        // transition, so their text visibly double-exposes. Exponential
-        // decay keeps only the current front card clearly legible; anything
-        // mid-transition reads as a fading edge, not competing text.
-        const opacity = Math.max(Math.exp(-depth * 2.2), 0.06);
-        const translateY = depth * 22;
-        const translateX = direction * depth * 18;
-        const rotate = direction * depth * 8;
+        const scale = 1 - depth * 0.12;
+        const opacity = Math.max(Math.exp(-depth * 3), 0.04);
+        const translateY = depth * 12;
+        const translateX = direction * depth * 70;
+        const rotate = direction * depth * 4;
 
         card.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) scale(${scale})`;
         card.style.opacity = String(opacity);
