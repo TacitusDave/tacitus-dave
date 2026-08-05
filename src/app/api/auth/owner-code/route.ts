@@ -3,6 +3,7 @@ import { verifyOwnerCode, OWNER_SESSION_EMAIL } from "@/lib/owner-code";
 import { createSessionToken, SESSION_COOKIE, SESSION_TTL_SECONDS } from "@/lib/session";
 import { recordLabActivity } from "@/lib/lab-activity";
 import { isLockedOut, recordFailure, clearAttempts } from "@/lib/rate-limit";
+import { createOwnerSession } from "@/lib/owner-sessions";
 
 const RATE_LIMIT_SCOPE = "owner-code";
 
@@ -47,7 +48,18 @@ export async function POST(request: NextRequest) {
       console.error("Failed to record lab activity:", err),
     );
 
-    const token = await createSessionToken(OWNER_SESSION_EMAIL, null);
+    // Best-effort — if this write fails the redemption still succeeds (same
+    // fail-open spirit as the rest of this route); the token just won't
+    // carry an ownerSessionId, which proxy.ts treats as still-valid rather
+    // than as a reason to block.
+    let ownerSessionId: string | undefined;
+    try {
+      ownerSessionId = await createOwnerSession(identifier);
+    } catch (error) {
+      console.error("Failed to record owner session:", error);
+    }
+
+    const token = await createSessionToken(OWNER_SESSION_EMAIL, null, ownerSessionId);
     const response = NextResponse.json({ ok: true });
     response.cookies.set(SESSION_COOKIE, token, {
       httpOnly: true,

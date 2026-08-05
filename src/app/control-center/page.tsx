@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { OrgManager } from "@/components/admin/org-manager";
 import { OwnerCodePanel } from "@/components/admin/owner-code-panel";
+import { OwnerSessionsPanel } from "@/components/admin/owner-sessions-panel";
 import { ActivityLog } from "@/components/admin/activity-log";
 
 export const metadata: Metadata = {
@@ -27,6 +28,10 @@ export default function ControlCenterPage() {
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <OwnerCodePanel />
         <ActivityLog />
+      </div>
+
+      <div className="mt-6">
+        <OwnerSessionsPanel />
       </div>
     </section>
   );

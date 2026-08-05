@@ -4,6 +4,7 @@ import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-sessi
 import { getMembership } from "@/lib/memberships";
 import { getOrganization, isActiveOrganization } from "@/lib/organizations";
 import { OWNER_SESSION_EMAIL } from "@/lib/owner-code";
+import { isOwnerSessionActive } from "@/lib/owner-sessions";
 
 export const config = {
   matcher: [
@@ -52,11 +53,27 @@ async function handleLab(request: NextRequest, pathname: string) {
     return redirectToAuthorize(request, pathname);
   }
 
-  const { email, orgId } = identity;
+  const { email, orgId, ownerSessionId } = identity;
 
-  // The owner's bypass session isn't tied to any Organization, so it has
-  // nothing to check here — its only revocation path is rotating the code.
-  if (email !== OWNER_SESSION_EMAIL) {
+  if (email === OWNER_SESSION_EMAIL) {
+    // Tokens minted before this field existed carry no ownerSessionId —
+    // treat those as still-valid rather than retroactively revoking every
+    // owner session on deploy. Only sessions that DO carry an id get the
+    // live per-redemption check, which is what lets an admin kill one
+    // specific redemption from the control center without rotating
+    // OWNER_CODE_SECRET and logging every legitimate use out at once.
+    if (ownerSessionId) {
+      try {
+        if (!(await isOwnerSessionActive(ownerSessionId))) {
+          return redirectToAuthorize(request, pathname);
+        }
+      } catch (error) {
+        // Redis unreachable — fail open, matching the membership check
+        // below: an infra blip shouldn't lock anyone out.
+        console.error("Owner session status check failed:", error);
+      }
+    }
+  } else {
     if (!orgId) {
       return redirectToAuthorize(request, pathname);
     }
