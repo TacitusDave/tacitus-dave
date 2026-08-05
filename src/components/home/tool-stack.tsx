@@ -21,50 +21,120 @@ const TOOLS: ToolSpec[] = [
   { kind: "flow", title: "Flow Builder" },
 ];
 
+// Real content pulled from each tool's actual data (src/lib/security-sim.ts,
+// src/lib/architecture.ts) rather than invented labels — these are meant to
+// read as recognizable snapshots of the real tool, not generic diagrams.
+const SOC_EVENTS = [
+  { technique: "T1595 · Active Scanning", message: "Port scan detected from 203.0.113.44", severity: "Medium", color: "#b8760a" },
+  { technique: "T1190 · Exploit Public-Facing App", message: "Exploit attempt blocked at the edge", severity: "High", color: "#c53434" },
+  { technique: "T1583 · Acquire Infrastructure", message: "Newly registered domain matched threat feed", severity: "Low", color: "#1a8a5f" },
+] as const;
+
+const ARCHITECTURE_NODES = [
+  { label: "Client", x: 30, y: 26 },
+  { label: "Edge / CDN", x: 100, y: 12 },
+  { label: "API Gateway", x: 170, y: 26 },
+] as const;
+
 function MockContent({ kind }: { kind: ToolKind }) {
   switch (kind) {
     case "security":
       return (
-        <div className="flex h-full flex-col justify-center gap-3 p-5">
-          {(["#c53434", "#b8760a", "#1a8a5f"] as const).map((color, i) => (
-            <div key={color} className="flex items-center gap-2">
-              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
-              <span className="h-1.5 flex-1 rounded-full bg-border" style={{ maxWidth: `${70 - i * 15}%` }} />
+        <div className="flex h-full flex-col gap-2 p-3">
+          <div className="flex items-center justify-between px-1 font-mono text-[9px] uppercase tracking-widest text-foreground-muted">
+            <span>MITRE ATT&amp;CK Feed</span>
+            <span className="text-accent">3 events</span>
+          </div>
+          {SOC_EVENTS.map((event) => (
+            <div key={event.technique} className="flex flex-col gap-0.5 rounded-md border border-border bg-background/60 px-2.5 py-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate font-mono text-[9px] text-foreground-muted">{event.technique}</span>
+                <span
+                  className="shrink-0 rounded-full px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-wide text-white"
+                  style={{ backgroundColor: event.color }}
+                >
+                  {event.severity}
+                </span>
+              </div>
+              <p className="truncate text-[10px] text-foreground">{event.message}</p>
             </div>
           ))}
         </div>
       );
     case "architecture":
       return (
-        <svg viewBox="0 0 200 100" className="h-full w-full p-5" aria-hidden="true">
-          <circle cx="40" cy="30" r="10" fill="none" stroke="currentColor" strokeOpacity="0.4" />
-          <circle cx="160" cy="30" r="10" fill="none" stroke="currentColor" strokeOpacity="0.4" />
-          <circle cx="100" cy="75" r="10" fill="none" stroke="currentColor" strokeOpacity="0.4" />
-          <line x1="48" y1="34" x2="92" y2="70" stroke="currentColor" strokeOpacity="0.3" />
-          <line x1="152" y1="34" x2="108" y2="70" stroke="currentColor" strokeOpacity="0.3" />
-          <line x1="50" y1="30" x2="150" y2="30" stroke="currentColor" strokeOpacity="0.3" />
-        </svg>
+        <div className="flex h-full flex-col justify-center p-4">
+          <svg viewBox="0 0 200 100" className="h-full w-full" aria-hidden="true">
+            <line x1="42" y1="26" x2="88" y2="16" stroke="currentColor" strokeOpacity="0.35" />
+            <line x1="112" y1="16" x2="158" y2="26" stroke="currentColor" strokeOpacity="0.35" />
+            {ARCHITECTURE_NODES.map((node) => (
+              <g key={node.label}>
+                <rect
+                  x={node.x - 24}
+                  y={node.y - 10}
+                  width="48"
+                  height="20"
+                  rx="5"
+                  fill="var(--background-elevated)"
+                  stroke="currentColor"
+                  strokeOpacity="0.5"
+                />
+                <text
+                  x={node.x}
+                  y={node.y + 3}
+                  textAnchor="middle"
+                  fontSize="7"
+                  fontFamily="var(--font-geist-mono)"
+                  fill="currentColor"
+                  fillOpacity="0.85"
+                >
+                  {node.label}
+                </text>
+              </g>
+            ))}
+          </svg>
+        </div>
       );
     case "browser":
       return (
-        <div className="flex h-full flex-col justify-center gap-3 p-5">
-          <div className="h-5 rounded-full border border-border bg-background px-3 font-mono text-[10px] leading-5 text-foreground-muted">
-            search…
+        <div className="flex h-full flex-col gap-2.5 p-3">
+          <div className="flex items-center gap-1.5 rounded-md border border-border bg-background/60 px-2 py-1.5">
+            <span className="flex gap-1" aria-hidden="true">
+              <span className="h-1.5 w-1.5 rounded-full bg-border" />
+              <span className="h-1.5 w-1.5 rounded-full bg-border" />
+            </span>
+            <span className="truncate font-mono text-[9px] text-foreground-muted">
+              duckduckgo.com/?q=cidr+calculator
+            </span>
           </div>
-          <div className="h-1.5 w-3/4 rounded-full bg-border" />
-          <div className="h-1.5 w-1/2 rounded-full bg-border" />
+          <div className="flex flex-1 flex-col gap-1.5 rounded-md border border-border bg-background/40 p-2.5">
+            <div className="h-2 w-2/3 rounded-full bg-border" />
+            <div className="h-1.5 w-full rounded-full bg-border/70" />
+            <div className="h-1.5 w-5/6 rounded-full bg-border/70" />
+            <div className="h-1.5 w-4/6 rounded-full bg-border/70" />
+          </div>
         </div>
       );
     case "flow":
       return (
-        <svg viewBox="0 0 200 100" className="h-full w-full p-5" aria-hidden="true">
-          <rect x="20" y="20" width="40" height="24" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.4" />
-          <rect x="140" y="20" width="40" height="24" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.4" />
-          <rect x="80" y="60" width="40" height="24" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.4" />
-          <line x1="60" y1="32" x2="140" y2="32" stroke="currentColor" strokeOpacity="0.3" />
-          <line x1="40" y1="44" x2="90" y2="60" stroke="currentColor" strokeOpacity="0.3" />
-          <line x1="160" y1="44" x2="110" y2="60" stroke="currentColor" strokeOpacity="0.3" />
-        </svg>
+        <div className="flex h-full flex-col p-3">
+          <div className="mb-2 flex gap-1.5 rounded-md border border-border bg-background/60 px-2 py-1.5" aria-hidden="true">
+            {[0, 1, 2, 3].map((i) => (
+              <span key={i} className="h-3 w-3 rounded-sm border border-border" />
+            ))}
+          </div>
+          <svg viewBox="0 0 200 90" className="h-full w-full flex-1" aria-hidden="true">
+            <rect x="16" y="14" width="44" height="22" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.45" />
+            <text x="38" y="28" textAnchor="middle" fontSize="7" fontFamily="var(--font-geist-mono)" fill="currentColor" fillOpacity="0.85">Start</text>
+            <rect x="140" y="14" width="44" height="22" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.45" />
+            <text x="162" y="28" textAnchor="middle" fontSize="7" fontFamily="var(--font-geist-mono)" fill="currentColor" fillOpacity="0.85">Deploy</text>
+            <rect x="78" y="54" width="44" height="22" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.45" />
+            <text x="100" y="68" textAnchor="middle" fontSize="7" fontFamily="var(--font-geist-mono)" fill="currentColor" fillOpacity="0.85">Review</text>
+            <line x1="60" y1="26" x2="140" y2="26" stroke="currentColor" strokeOpacity="0.3" />
+            <line x1="45" y1="36" x2="90" y2="54" stroke="currentColor" strokeOpacity="0.3" />
+            <line x1="155" y1="36" x2="115" y2="54" stroke="currentColor" strokeOpacity="0.3" />
+          </svg>
+        </div>
       );
     default:
       return null;
@@ -116,25 +186,30 @@ export function ToolStack() {
       const total = Math.max(1, rect.height - vh);
       const traveled = Math.min(Math.max(-rect.top, 0), total);
       const progress = traveled / total;
-      const frontPosition = progress * (TOOLS.length - 1);
+      const N = TOOLS.length;
+      // Sweeps 0 -> N (not N-1) — a full shuffle of the deck, ending back on
+      // Terminal exactly when the hero scroll finishes, not stopping on the
+      // last tool.
+      const frontPosition = progress * N;
 
       cardRefs.current.forEach((card, index) => {
         if (!card) return;
-        const relative = index - frontPosition;
-        // Capped lower than before (1.8, not 3) — the exit should be
-        // complete quickly, not linger across a wide scroll range. This is
-        // a decisive swap, closer to swiping between iOS home screens, not
-        // a slow stack-recede: the outgoing card is already sliding away
-        // and fading out fast while the next one comes in from the side,
-        // rather than everything crossfading gently in place.
-        const depth = Math.min(Math.abs(relative), 1.8);
-        const direction = relative === 0 ? 0 : relative > 0 ? 1 : -1;
+        // One direction only, via modulo — this is the actual fix for the
+        // earlier bug where cards exited left OR right depending on
+        // whether they were "past" or "future": a real deck shuffle always
+        // moves the top card the same way. relative=0 is front; it rises
+        // toward N as the card recedes, wrapping back to 0 exactly when the
+        // deck has come full circle.
+        const relative = ((frontPosition - index) % N + N) % N;
+        const depth = Math.min(relative, 1.8);
 
         const scale = 1 - depth * 0.12;
         const opacity = Math.max(Math.exp(-depth * 3), 0.04);
         const translateY = depth * 12;
-        const translateX = direction * depth * 70;
-        const rotate = direction * depth * 4;
+        // Single fixed direction (always negative/left) — no more
+        // direction-by-sign branching.
+        const translateX = -depth * 70;
+        const rotate = -depth * 4;
 
         card.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) scale(${scale})`;
         card.style.opacity = String(opacity);

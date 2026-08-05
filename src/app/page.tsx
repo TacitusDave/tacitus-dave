@@ -101,7 +101,7 @@ export default function Home() {
 
       <section className="border-t border-border">
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 px-6 py-16 text-center">
-          <Reveal className="flex flex-col items-center gap-4">
+          <Reveal variant="drop" className="flex flex-col items-center gap-4">
             <p className="font-mono text-xs uppercase tracking-widest text-accent">
               That was five tools stacked behind one terminal
             </p>
