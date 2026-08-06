@@ -10,6 +10,17 @@ interface ToolSpec {
   title: string;
 }
 
+// The first slice of the hero's scroll range is spent letting the stack
+// grow into its full "docked" size (see page.tsx's scale clamp, which uses
+// this same constant) while the headline fades and the background art
+// drifts — cards don't move at all yet. Only once that settle phase is
+// behind us does further scrolling start driving the card cycle, over the
+// remaining (1 - HERO_SETTLE_FRACTION) of the range. Splitting these into
+// two distinct phases (rather than both spanning 0-1 at once) is the fix
+// for the cycle feeling like it was fighting the entrance for the same
+// scroll budget.
+const HERO_SETTLE_FRACTION = 0.2;
+
 // Cycle order — this is also the order each tool takes its turn at front as
 // the hero scrolls: Terminal starts front and recedes first, Flow Builder
 // is last to arrive.
@@ -187,10 +198,13 @@ export function ToolStack() {
       const traveled = Math.min(Math.max(-rect.top, 0), total);
       const progress = traveled / total;
       const N = TOOLS.length;
-      // Sweeps 0 -> N (not N-1) — a full shuffle of the deck, ending back on
-      // Terminal exactly when the hero scroll finishes, not stopping on the
-      // last tool.
-      const frontPosition = progress * N;
+      // Nothing shuffles during the settle phase — frontPosition sits at 0
+      // (Terminal, fully front) until the stack has finished growing into
+      // place, then sweeps 0 -> N (not N-1) over the rest of the scroll: a
+      // full shuffle of the deck, ending back on Terminal exactly when the
+      // hero scroll finishes, not stopping on the last tool.
+      const cycleProgress = Math.max(0, Math.min(1, (progress - HERO_SETTLE_FRACTION) / (1 - HERO_SETTLE_FRACTION)));
+      const frontPosition = cycleProgress * N;
 
       cardRefs.current.forEach((card, index) => {
         if (!card) return;
@@ -201,15 +215,33 @@ export function ToolStack() {
         // toward N as the card recedes, wrapping back to 0 exactly when the
         // deck has come full circle.
         const relative = ((frontPosition - index) % N + N) % N;
-        const depth = Math.min(relative, 1.8);
+        // relative alone is discontinuous at each card's arrival: right up
+        // until frontPosition reaches its index, relative sits near N (deep,
+        // capped, invisible), then snaps to ~0 the instant its turn starts —
+        // a hard pop-in rather than a rise. closeness is the distance to
+        // front measured the SHORT way around (whichever is nearer, past or
+        // future turn), which is continuous through that wrap — so the
+        // incoming card now visibly rises out of the same down-left "stack"
+        // spot the outgoing card just receded into, instead of appearing
+        // out of nowhere.
+        const closeness = Math.min(relative, N - relative);
+        // A brief hold at true front — without this, "depth 0" is a single
+        // instant and no tool ever reads as fully sharp, only ever mid-fade.
+        const DWELL = 0.12;
+        const eased = Math.max(0, closeness - DWELL);
+        const depth = Math.min(eased, 1.8);
 
         const scale = 1 - depth * 0.12;
-        const opacity = Math.max(Math.exp(-depth * 3), 0.04);
-        const translateY = depth * 12;
-        // Single fixed direction (always negative/left) — no more
-        // direction-by-sign branching.
-        const translateX = -depth * 70;
-        const rotate = -depth * 4;
+        // Steep exponential falloff — by the time a card has dropped away
+        // it needs to already read as gone, not still hanging around
+        // half-visible while the next one arrives underneath it.
+        const opacity = Math.max(Math.exp(-depth * 3.4), 0.04);
+        // A pronounced downward slide is the actual "drops into the garage"
+        // motion — this is doing most of the work now; the earlier version
+        // barely moved vertically and read as a soft recede instead.
+        const translateY = depth * 92;
+        const translateX = -depth * 42;
+        const rotate = -depth * 6;
 
         card.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) scale(${scale})`;
         card.style.opacity = String(opacity);
@@ -237,8 +269,25 @@ export function ToolStack() {
   return (
     <div
       ref={outerRef}
-      className="relative mx-auto mt-10 h-72 w-full max-w-xl sm:h-80 sm:max-w-2xl md:h-96 md:max-w-3xl"
-      style={{ transform: "scale(calc(0.94 + var(--scroll-progress, 0) * 0.34))" }}
+      // Below lg, the card is already full-bleed against the hero's own
+      // padding (w-full with no side room to spare) — scaling it up by the
+      // same 1.28x used on desktop pushes it past the viewport edge and
+      // clips card headers mid-letter. --stack-scale-max keeps the grow
+      // effect present everywhere but caps it at a value that's provably
+      // safe against that padding down to very narrow phones; lg+ has
+      // genuine slack (the card's own max-w-3xl cap leaves margin against
+      // the viewport) so it gets the fuller effect.
+      className="relative mx-auto mt-10 h-72 w-full max-w-xl [--stack-scale-max:1.06] sm:h-80 sm:max-w-2xl md:h-96 md:max-w-3xl lg:[--stack-scale-max:1.28]"
+      // Pure CSS (no JS needed here, unlike the per-card math above) — grows
+      // from 0.94 to --stack-scale-max over just the settle fraction of the
+      // scroll, via clamp(), then holds flat for the rest of the cycle
+      // phase instead of continuing to grow through it. The growth rate is
+      // derived from --stack-scale-max rather than hardcoded, so the
+      // responsive cap above still finishes growing at the same settle
+      // point regardless of which tier's max it's clamped to.
+      style={{
+        transform: `scale(clamp(0.94, calc(0.94 + var(--scroll-progress, 0) * (var(--stack-scale-max) - 0.94) / ${HERO_SETTLE_FRACTION}), var(--stack-scale-max)))`,
+      }}
     >
       {TOOLS.map((tool, index) => (
         <div
