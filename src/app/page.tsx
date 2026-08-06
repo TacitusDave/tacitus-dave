@@ -10,6 +10,7 @@ import { ScrollBrightenText } from "@/components/ui/scroll-brighten-text";
 import { RadialBurst } from "@/components/lab/radial-burst";
 import { HeroFlankArt } from "@/components/home/hero-flank-art";
 import { ToolStack } from "@/components/home/tool-stack";
+import { HERO_SETTLE_FRACTION } from "@/lib/hero-timing";
 import { TechMarquee } from "@/components/home/tech-marquee";
 import { FeatureShowcase } from "@/components/home/feature-showcase";
 
@@ -48,7 +49,18 @@ export default function Home() {
   return (
     <>
       <ScrollProgress heightVh={340}>
-        <div className="relative mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-6 text-center">
+        {/* justify-start + top padding, not justify-center: on a short viewport,
+            a centered flex column that overflows its container clips BOTH
+            ends symmetrically — including the top of the headline, which can
+            end up entirely invisible on shorter laptop/phone screens. Top-
+            anchoring guarantees the headline always renders in full; the
+            ToolStack still animates to true dead-center during the settle
+            phase regardless, since that target is measured independently
+            (see tool-stack.tsx's measure()), not derived from this
+            alignment. Any residual overflow on very short viewports now
+            clips only the LESS critical bottom of the stack, never the
+            headline. */}
+        <div className="relative mx-auto flex h-full max-w-6xl flex-col items-center justify-start px-6 pt-12 text-center sm:pt-16">
           <RadialBurst
             className="pointer-events-none absolute left-1/2 top-[38%] h-[640px] w-[640px] -translate-x-1/2 -translate-y-1/2 text-accent/[0.18]"
             style={{
@@ -76,10 +88,22 @@ export default function Home() {
 
           <div
             style={{
-              opacity: "calc(1 - var(--scroll-progress, 0) * 3)",
+              // Fully faded exactly as the settle phase completes (see
+              // HERO_SETTLE_FRACTION, shared with ToolStack) — the text
+              // needs to be gone by the moment the stack finishes rising
+              // into its place, not still fading in afterward while cards
+              // are already cycling.
+              opacity: `calc(1 - var(--scroll-progress, 0) * ${(1 / HERO_SETTLE_FRACTION).toFixed(2)})`,
               transform: "translateY(calc(var(--scroll-progress, 0) * -40px))",
             }}
-            className="relative z-10 flex flex-col items-center gap-7"
+            // shrink-0: without it, flexbox silently compresses this block
+            // (and the ToolStack below it) whenever their combined natural
+            // height exceeds the sticky viewport — which it does on a
+            // great many ordinary laptop screens — producing inconsistent,
+            // non-round rendered sizes instead of a predictable layout.
+            // Trimmed gaps (gap-5, was gap-7) claw back some of the height
+            // that no longer being allowed to silently shrink now costs.
+            className="relative z-10 flex shrink-0 flex-col items-center gap-4"
           >
             <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-accent">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />

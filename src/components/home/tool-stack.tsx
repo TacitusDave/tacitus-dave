@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Terminal } from "@/components/terminal/terminal";
+import { HERO_SETTLE_FRACTION } from "@/lib/hero-timing";
 
 type ToolKind = "terminal" | "security" | "architecture" | "browser" | "flow";
 
@@ -10,16 +11,27 @@ interface ToolSpec {
   title: string;
 }
 
-// The first slice of the hero's scroll range is spent letting the stack
-// grow into its full "docked" size (see page.tsx's scale clamp, which uses
-// this same constant) while the headline fades and the background art
-// drifts — cards don't move at all yet. Only once that settle phase is
-// behind us does further scrolling start driving the card cycle, over the
-// remaining (1 - HERO_SETTLE_FRACTION) of the range. Splitting these into
-// two distinct phases (rather than both spanning 0-1 at once) is the fix
-// for the cycle feeling like it was fighting the entrance for the same
-// scroll budget.
-const HERO_SETTLE_FRACTION = 0.2;
+// HERO_SETTLE_FRACTION lives in @/lib/hero-timing (a plain module, not
+// "use client") so page.tsx — a Server Component — can import it too; see
+// that file for why it can't just be exported from here directly. It's the
+// slice of the hero's scroll range spent letting the stack grow AND rise
+// into its full "docked" position — dead center in the viewport, exactly
+// where the headline was — while the headline fades out (page.tsx uses
+// this same constant so its fade finishes exactly as the stack finishes
+// settling) and the background art drifts. Cards don't move at all yet.
+// Only once that settle phase is behind us does further scrolling start
+// driving the card cycle, over the rest of the range up to
+// HERO_CYCLE_END_FRACTION. Splitting these into distinct phases (rather
+// than all three fighting over the same scroll budget) is what makes each
+// one read clearly instead of blurring together.
+// The cycle finishes (and Flow Builder freezes at front) a bit before the
+// hero's sticky pin actually releases — a deliberate held beat on the last
+// tool rather than an instant handoff straight into the next section.
+const HERO_CYCLE_END_FRACTION = 0.92;
+// Viewport offset the sticky hero viewport starts at (header's top-24 /
+// main's pt-24, both 6rem) — needed to compute the sticky viewport's own
+// vertical center in viewport coordinates.
+const STICKY_TOP_OFFSET_PX = 96;
 
 // Cycle order — this is also the order each tool takes its turn at front as
 // the hero scrolls: Terminal starts front and recedes first, Flow Builder
@@ -172,6 +184,16 @@ function MockContent({ kind }: { kind: ToolKind }) {
 export function ToolStack() {
   const outerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // The vertical distance (viewport px) between the stack's natural,
+  // untransformed position and dead-center in the sticky hero viewport —
+  // measured from the DOM rather than guessed, since it depends on the
+  // headline's actual rendered height (which varies by breakpoint and text
+  // wrap). Settling drives translateY from 0 up to this value.
+  const neededTranslateYRef = useRef(0);
+  // Below lg the card is already full-bleed against the hero's own padding
+  // — growing it by the same amount used on desktop would push it past the
+  // viewport edge. Same threshold as the responsive classes removed below.
+  const scaleMaxRef = useRef(1.06);
 
   useEffect(() => {
     const outer = outerRef.current;
@@ -184,9 +206,27 @@ export function ToolStack() {
     // registration order, reading the property back can land on a stale,
     // one-frame-old value. Recomputing from the same source rect makes this
     // component self-sufficient and always exactly in sync with whatever
-    // the CSS-driven elements (headline fade, outer scale) are showing.
+    // the CSS-driven elements (headline fade) are showing.
     const progressRoot = outer.closest<HTMLElement>("[data-scroll-progress-root]");
     if (!progressRoot) return;
+
+    // offsetTop/offsetHeight reflect the CSS layout box and are unaffected
+    // by `transform` (transforms are paint-time only), so this is safe to
+    // call even after a translateY/scale has already been applied — no
+    // need to clear and restore the transform first. offsetTop is relative
+    // to outer's offsetParent (the flex column div, itself `relative`),
+    // whose own top edge already coincides with the sticky viewport's top —
+    // so the target is just half the sticky viewport's height, NOT that
+    // plus STICKY_TOP_OFFSET_PX again (that offset is already "baked in" to
+    // this coordinate frame, not something to add on top of it).
+    function measure() {
+      if (!outer) return;
+      const stickyViewportHeight = window.innerHeight - STICKY_TOP_OFFSET_PX;
+      const targetCenterY = stickyViewportHeight / 2;
+      const naturalCenterY = outer.offsetTop + outer.offsetHeight / 2;
+      neededTranslateYRef.current = targetCenterY - naturalCenterY;
+      scaleMaxRef.current = window.innerWidth >= 1024 ? 1.28 : 1.06;
+    }
 
     let frame = 0;
 
@@ -198,40 +238,43 @@ export function ToolStack() {
       const traveled = Math.min(Math.max(-rect.top, 0), total);
       const progress = traveled / total;
       const N = TOOLS.length;
-      // Nothing shuffles during the settle phase — frontPosition sits at 0
-      // (Terminal, fully front) until the stack has finished growing into
-      // place, then sweeps 0 -> N (not N-1) over the rest of the scroll: a
-      // full shuffle of the deck, ending back on Terminal exactly when the
-      // hero scroll finishes, not stopping on the last tool.
-      const cycleProgress = Math.max(0, Math.min(1, (progress - HERO_SETTLE_FRACTION) / (1 - HERO_SETTLE_FRACTION)));
-      const frontPosition = cycleProgress * N;
+
+      // Settle phase: grow from 0.94 to the responsive max scale AND rise
+      // from its natural (post-headline) position up to dead-center, in
+      // lockstep, finishing exactly as the headline finishes fading (see
+      // page.tsx, which uses this same HERO_SETTLE_FRACTION).
+      const settleT = Math.min(1, progress / HERO_SETTLE_FRACTION);
+      const scale = 0.94 + settleT * (scaleMaxRef.current - 0.94);
+      const outerTranslateY = settleT * neededTranslateYRef.current;
+      outer.style.transform = `translate(0, ${outerTranslateY}px) scale(${scale})`;
+
+      // Cycle phase: sweeps 0 -> N-1 (not N) — ends ON the last tool and
+      // stays there once cycleProgress hits 1, rather than looping back to
+      // Terminal. Finishes at HERO_CYCLE_END_FRACTION, short of the hero's
+      // full scroll range, so the last tool holds for a beat before the
+      // sticky pin releases into the next section — not an instant handoff.
+      const cycleProgress = Math.max(
+        0,
+        Math.min(1, (progress - HERO_SETTLE_FRACTION) / (HERO_CYCLE_END_FRACTION - HERO_SETTLE_FRACTION)),
+      );
+      const frontPosition = cycleProgress * (N - 1);
 
       cardRefs.current.forEach((card, index) => {
         if (!card) return;
-        // One direction only, via modulo — this is the actual fix for the
-        // earlier bug where cards exited left OR right depending on
-        // whether they were "past" or "future": a real deck shuffle always
-        // moves the top card the same way. relative=0 is front; it rises
-        // toward N as the card recedes, wrapping back to 0 exactly when the
-        // deck has come full circle.
-        const relative = ((frontPosition - index) % N + N) % N;
-        // relative alone is discontinuous at each card's arrival: right up
-        // until frontPosition reaches its index, relative sits near N (deep,
-        // capped, invisible), then snaps to ~0 the instant its turn starts —
-        // a hard pop-in rather than a rise. closeness is the distance to
-        // front measured the SHORT way around (whichever is nearer, past or
-        // future turn), which is continuous through that wrap — so the
-        // incoming card now visibly rises out of the same down-left "stack"
-        // spot the outgoing card just receded into, instead of appearing
-        // out of nowhere.
-        const closeness = Math.min(relative, N - relative);
+        // No wraparound needed now that the cycle doesn't loop — a plain
+        // distance means a card that's already had its turn just keeps
+        // receding (never creeps back into view), and a card whose turn
+        // hasn't come yet approaches smoothly, continuous through arrival
+        // exactly like before (this is still just a continuous function of
+        // frontPosition, so there's no pop — only the wraparound-specific
+        // "closeness" trick is gone, because there's no wrap left to fix).
+        const distance = Math.abs(frontPosition - index);
         // A brief hold at true front — without this, "depth 0" is a single
         // instant and no tool ever reads as fully sharp, only ever mid-fade.
         const DWELL = 0.12;
-        const eased = Math.max(0, closeness - DWELL);
-        const depth = Math.min(eased, 1.8);
+        const depth = Math.min(Math.max(0, distance - DWELL), 1.8);
 
-        const scale = 1 - depth * 0.12;
+        const cardScale = 1 - depth * 0.12;
         // Steep exponential falloff — by the time a card has dropped away
         // it needs to already read as gone, not still hanging around
         // half-visible while the next one arrives underneath it.
@@ -243,7 +286,7 @@ export function ToolStack() {
         const translateX = -depth * 42;
         const rotate = -depth * 6;
 
-        card.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) scale(${scale})`;
+        card.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) scale(${cardScale})`;
         card.style.opacity = String(opacity);
         card.style.zIndex = String(Math.round(100 - depth * 10));
       });
@@ -256,38 +299,42 @@ export function ToolStack() {
       frame = requestAnimationFrame(update);
     }
 
+    function onResize() {
+      measure();
+      onScroll();
+    }
+
+    measure();
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
   return (
     <div
       ref={outerRef}
-      // Below lg, the card is already full-bleed against the hero's own
-      // padding (w-full with no side room to spare) — scaling it up by the
-      // same 1.28x used on desktop pushes it past the viewport edge and
-      // clips card headers mid-letter. --stack-scale-max keeps the grow
-      // effect present everywhere but caps it at a value that's provably
-      // safe against that padding down to very narrow phones; lg+ has
-      // genuine slack (the card's own max-w-3xl cap leaves margin against
-      // the viewport) so it gets the fuller effect.
-      className="relative mx-auto mt-10 h-72 w-full max-w-xl [--stack-scale-max:1.06] sm:h-80 sm:max-w-2xl md:h-96 md:max-w-3xl lg:[--stack-scale-max:1.28]"
-      // Pure CSS (no JS needed here, unlike the per-card math above) — grows
-      // from 0.94 to --stack-scale-max over just the settle fraction of the
-      // scroll, via clamp(), then holds flat for the rest of the cycle
-      // phase instead of continuing to grow through it. The growth rate is
-      // derived from --stack-scale-max rather than hardcoded, so the
-      // responsive cap above still finishes growing at the same settle
-      // point regardless of which tier's max it's clamped to.
-      style={{
-        transform: `scale(clamp(0.94, calc(0.94 + var(--scroll-progress, 0) * (var(--stack-scale-max) - 0.94) / ${HERO_SETTLE_FRACTION}), var(--stack-scale-max)))`,
-      }}
+      // mt-6 is just the initial (unscrolled) spacing below the headline —
+      // it doesn't fight the settle-phase translateY at all, since that's
+      // measured via offsetTop, which already reflects this margin. Below
+      // lg the card is already full-bleed against the hero's own padding
+      // (w-full with no side room to spare) — growing it by the same
+      // amount used on desktop would push it past the viewport edge, which
+      // is why scaleMaxRef caps lower there (see measure()). Heights are
+      // deliberately modest (it grows into its docked size via scale
+      // during the settle phase, see update() above) — combined with the
+      // headline block above, this needs to comfortably fit inside the
+      // sticky viewport on an ordinary laptop screen (~700-800px tall)
+      // without flexbox silently compressing either one; shrink-0 makes
+      // that an explicit, testable constraint instead of a silent squish.
+      className="relative mx-auto mt-4 h-44 w-full max-w-xl shrink-0 sm:h-52 sm:max-w-2xl md:h-56 md:max-w-3xl"
+      // Matches progress=0's computed transform so there's no flash between
+      // first paint and the effect below taking over a frame later.
+      style={{ transform: "scale(0.94)" }}
     >
       {TOOLS.map((tool, index) => (
         <div
